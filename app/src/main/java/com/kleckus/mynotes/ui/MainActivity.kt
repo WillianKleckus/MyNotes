@@ -1,7 +1,8 @@
-package com.kleckus.mynotes
+package com.kleckus.mynotes.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.kleckus.mynotes.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
