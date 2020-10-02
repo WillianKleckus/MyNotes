@@ -12,5 +12,8 @@ class MyNotesSystem : MyNotesApplication() {
 
         var noteList = mutableListOf<Note>()
         var bookList = mutableListOf<Book>()
+
+        fun addNote(){
+        }
     }
 }

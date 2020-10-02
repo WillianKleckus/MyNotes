@@ -3,6 +3,7 @@ package com.kleckus.mynotes.database
 import android.content.Context
 import com.kleckus.mynotes.system.*
 import io.paperdb.Paper
+import java.lang.Exception
 
 enum class DB_KEYS(val key : String){
     NOTE("note-key"),
@@ -20,12 +21,13 @@ class Database{
             val ret = Promise<Boolean>()
             var success = false
             Async{
-                MyNotesSystem.noteList = Paper.book(BOOKS.MAIN_BOOK.key).read<MutableList<Note>>(DB_KEYS.NOTE.key)
-                MyNotesSystem.bookList = Paper.book(BOOKS.MAIN_BOOK.key).read<MutableList<Book>>(DB_KEYS.BOOK.key)
-            }.andThen {
-                success = true
-                ret.complete(success)
-            }
+                try {
+                    MyNotesSystem.noteList = Paper.book(BOOKS.MAIN_BOOK.key).read<MutableList<Note>>(DB_KEYS.NOTE.key)
+                    MyNotesSystem.bookList = Paper.book(BOOKS.MAIN_BOOK.key).read<MutableList<Book>>(DB_KEYS.BOOK.key)
+                    success = true
+                }
+                catch (e : Exception) { success = false }
+            }.andThen { ret.complete(success) }
             return ret
         }
 
@@ -33,12 +35,13 @@ class Database{
             val ret = Promise<Boolean>()
             var success = false
             Async{
-                Paper.book(BOOKS.MAIN_BOOK.key).write(DB_KEYS.NOTE.key, MyNotesSystem.noteList)
-                Paper.book(BOOKS.MAIN_BOOK.key).write(DB_KEYS.BOOK.key, MyNotesSystem.bookList)
-            }.andThen {
-                success = true
-                ret.complete(success)
-            }
+                try {
+                    Paper.book(BOOKS.MAIN_BOOK.key).write(DB_KEYS.NOTE.key, MyNotesSystem.noteList)
+                    Paper.book(BOOKS.MAIN_BOOK.key).write(DB_KEYS.BOOK.key, MyNotesSystem.bookList)
+                    success = true
+                }
+                catch (e : Exception){ success = false }
+            }.andThen { ret.complete(success) }
             return ret
         }
     }

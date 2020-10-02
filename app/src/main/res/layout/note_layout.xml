@@ -9,9 +9,9 @@
 
     <TextView
         android:id="@+id/noteTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Title"
+        android:text="@string/title_in_note"
         android:textColor="@color/titleTextColor"
         android:textSize="@dimen/titleTextSize"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,7 +29,7 @@
             android:id="@+id/noteContent"
             android:textSize="@dimen/contentTextSize"
             android:textColor="@color/contentTextColor"
-            android:text="Content"
+            android:text="@string/note_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 

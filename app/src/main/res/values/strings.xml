@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">My Notes</string>
+
+    <!-- List Item Strings -->
+    <string name="title">"This is the Title."</string>
+    <string name="random_description">"This is a little description."</string>
+
+    <!-- Opened Note Strings -->
+    <string name="title_in_note">"This is the note Title."</string>
+    <string name="note_content">"Here will be a the content of the selected note. Lorem ipsum is good but I don't remember the full version. Maybe it's because it is big AF..."</string>
 </resources>
