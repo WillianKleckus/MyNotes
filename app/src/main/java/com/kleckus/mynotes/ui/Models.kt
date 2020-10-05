@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kleckus.mynotes.R
 import com.kleckus.mynotes.system.Book
+import com.kleckus.mynotes.system.MASTER_BOOK_ID
+import com.kleckus.mynotes.system.MyNotesSystem
 import com.kleckus.mynotes.system.Note
 import kotlinx.android.synthetic.main.note_or_book_item_layout.view.*
 
@@ -14,9 +16,13 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
     private var bookContent = mutableListOf<Book>()
     private var noteContent = mutableListOf<Note>()
 
-    fun setContents(bc : MutableList<Book>, nc : MutableList<Note>){
-        bookContent = bc
-        noteContent = nc
+    fun setContentByBookId(bookId : Int){
+        val masterBook = MyNotesSystem.masterBook
+        if(bookId == MASTER_BOOK_ID){
+            bookContent = masterBook.bookList
+            noteContent = masterBook.noteList
+        }
+        else { masterBook.bookList.forEach { book -> if(book.id == bookId){ noteContent = book.noteList } } }
     }
 
     class VH (itemView : View) : RecyclerView.ViewHolder(itemView) {}

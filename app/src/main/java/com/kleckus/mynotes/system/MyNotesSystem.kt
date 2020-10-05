@@ -18,25 +18,25 @@ class MyNotesSystem : Application() {
             return ret
         }
 
-        var lastNoteId = 0
-        var noteList = mutableListOf<Note>()
-        var lastBookId = 0
-        var bookList = mutableListOf<Book>()
+        lateinit var masterBook : MasterBook
 
         fun <NoteOrBook> createNoteOrBook(product : NoteOrBook) : Promise<Boolean> {
             val ret = Promise<Boolean>()
             when (product) {
                 is Note -> {
-                    lastNoteId++
-                    noteList.add(product)
+                    masterBook.highestId++
+
+                    if(product.ownerId == masterBook.id) masterBook.noteList.add(product)
+                    else { masterBook.bookList.forEach { book -> if(book.id == product.ownerId) book.noteList.add(product) } }
+
                     Database.saveState().onComplete { success ->
                         if(success) log("Finished creating note successfully")
                         ret.complete(success)
                     }
                 }
                 is Book -> {
-                    lastBookId++
-                    bookList.add(product)
+                    masterBook.highestId++
+                    masterBook.bookList.add(product)
                     Database.saveState().onComplete { success ->
                         if(success) log("Finished creating book successfully")
                         ret.complete(success)

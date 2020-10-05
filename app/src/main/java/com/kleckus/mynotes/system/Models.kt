@@ -1,7 +1,12 @@
 package com.kleckus.mynotes.system
 
-class Note(val id : Int, val isLocked : Boolean, val password : String = "", val title : String, val content : String)
+class Note(val id : Int, val ownerId : Int, var isLocked : Boolean, var password : String = "", var title : String, var content : String)
 
-class Book(val id : Int, val isLocked : Boolean, val password : String = "", val title : String, val content : MutableList<Note>){
-    fun numberOfNotes() : Int = content.size
+open class Book(val id : Int, var isLocked : Boolean, var password : String = "", var title : String, var noteList : MutableList<Note>){
+    fun numberOfNotes() : Int = noteList.size
 }
+
+class MasterBook(var bookList : MutableList<Book>, var highestId : Int) : Book(MASTER_BOOK_ID, false, "", MASTER_BOOK_TITLE, mutableListOf())
+
+const val MASTER_BOOK_ID = -1
+private const val MASTER_BOOK_TITLE = "Master Book"

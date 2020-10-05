@@ -10,7 +10,7 @@ import com.kleckus.mynotes.system.MyNotesSystem
 import com.kleckus.mynotes.system.Note
 import kotlinx.android.synthetic.main.add_note_or_book_dialog_layout.view.*
 
-class CreateNBDialog : DialogFragment() {
+class CreateNBDialog(private val ownerId : Int) : DialogFragment() {
 
     var onFinished :  (product : Any) -> Unit = {}
 
@@ -31,15 +31,13 @@ class CreateNBDialog : DialogFragment() {
     }
 
     private fun onDone(title : String, bookRBState : Boolean){
-        val currentLastBookId = MyNotesSystem.lastBookId
-        val currentLastNoteId = MyNotesSystem.lastBookId
-
+        val currentHighestId = MyNotesSystem.masterBook.highestId
         if(bookRBState){
-            val book = Book(currentLastBookId+1, false, "", title, mutableListOf())
+            val book = Book(currentHighestId+1, false, "", title, mutableListOf())
             onFinished(book)
         }
         else{
-            val note = Note(currentLastNoteId+1, false, "", title, "")
+            val note = Note(currentHighestId+1, ownerId, false, "", title, "")
             onFinished(note)
         }
 
