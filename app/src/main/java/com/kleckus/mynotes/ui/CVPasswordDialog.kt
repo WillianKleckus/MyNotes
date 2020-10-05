@@ -8,7 +8,7 @@ import androidx.fragment.app.DialogFragment
 import com.kleckus.mynotes.R
 import kotlinx.android.synthetic.main.create_validade_password_dialog_layout.view.*
 
-class CVPasswordDialog(private val isCreating : Boolean)  : DialogFragment() {
+class CVPasswordDialog(private val isCreating : Boolean) : DialogFragment() {
 
     var onFinish : (password : String) -> Unit = {}
 

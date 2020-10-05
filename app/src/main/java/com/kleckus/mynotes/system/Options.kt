@@ -12,6 +12,7 @@ class Option(val description : String, val onClick : () -> Unit)
 class OptionAdapter : RecyclerView.Adapter<OptionAdapter.VH>(){
 
     var dataset = mutableListOf<Option>()
+    var onOptionChosen : () -> Unit = {}
 
     class VH(itemView : View) : RecyclerView.ViewHolder(itemView){}
 
@@ -25,7 +26,10 @@ class OptionAdapter : RecyclerView.Adapter<OptionAdapter.VH>(){
         val currentOption = dataset[position]
         val itemView = holder.itemView
         itemView.description.text = currentOption.description
-        itemView.setOnClickListener { currentOption.onClick() }
+        itemView.setOnClickListener {
+            currentOption.onClick()
+            onOptionChosen()
+        }
     }
 
     override fun getItemCount(): Int = dataset.size
