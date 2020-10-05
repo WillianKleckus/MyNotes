@@ -10,3 +10,5 @@ class MasterBook(var bookList : MutableList<Book>, var highestId : Int) : Book(M
 
 const val MASTER_BOOK_ID = -1
 private const val MASTER_BOOK_TITLE = "Master Book"
+
+val BAD_NOTE = Note(-1,-1,false,"","Bad Note", "This is a note that appears when something wrong occurs")

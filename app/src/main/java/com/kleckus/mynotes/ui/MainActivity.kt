@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.kleckus.mynotes.R
 import com.kleckus.mynotes.system.MASTER_BOOK_ID
 import com.kleckus.mynotes.system.MyNotesSystem
+import com.kleckus.mynotes.system.Util.Companion.navigateTo
 import kotlinx.android.synthetic.main.activity_main.*
 
 private const val CREATE_NB_TAG = "create_note_or_book_tag"
@@ -67,7 +68,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onClickNoteOpt(noteId : Int){
-
+        navigateTo(this, NoteActivity::class.java, passId = noteId)
     }
 
     private fun <NoteOrBook> onFinishCreating(product : NoteOrBook){

@@ -25,6 +25,13 @@ class MyNotesSystem : Application() {
             return masterBook
         }
 
+        fun getNoteById(id : Int) : Note{
+            masterBook.noteList.forEach { note -> if(note.id == id) return note }
+            masterBook.bookList.forEach { book -> book.noteList.forEach { note -> if(note.id == id) return note } }
+            log("Something went wrong")
+            return BAD_NOTE
+        }
+
         fun <NoteOrBook> createNoteOrBook(product : NoteOrBook) : Promise<Boolean> {
             val ret = Promise<Boolean>()
             when (product) {

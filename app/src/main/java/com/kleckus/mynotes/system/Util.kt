@@ -11,13 +11,15 @@ class Util{
             Log.i(MY_NOTE_SYSTEM_TAG, logMessage)
         }
 
-        fun navigateTo(activity: Class<*>, context : Context, clearHistory : Boolean = false)
+        fun navigateTo(from : Context, to: Class<*>, clearHistory : Boolean = false, passId: Int = -1)
         {
-            val intent : Intent = Intent(context, activity)
+            val intent = Intent(from, to)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             if(clearHistory)
                 intent.flags = intent.flags or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            context.startActivity(intent)
+            if(passId != -1)
+                intent.putExtra("id", passId )
+            from.startActivity(intent)
         }
     }
 }
