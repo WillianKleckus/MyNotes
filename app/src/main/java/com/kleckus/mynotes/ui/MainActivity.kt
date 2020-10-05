@@ -7,6 +7,8 @@ import com.kleckus.mynotes.R
 import com.kleckus.mynotes.system.MyNotesSystem
 import kotlinx.android.synthetic.main.activity_main.*
 
+private const val CREATE_NB_TAG = "create_note_or_book_tag"
+
 class MainActivity : AppCompatActivity() {
     companion object {
         fun refreshUI(){ adapter.notifyDataSetChanged() }
@@ -16,9 +18,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setupRecyclerView()
-
-        addButton.setOnClickListener { onClickAddButton() }
+        MyNotesSystem.initSystem().onComplete { success ->
+            setupRecyclerView()
+            addButton.setOnClickListener { onClickAddButton() }
+        }
     }
 
     private fun setupRecyclerView(){
@@ -28,10 +31,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onClickAddButton(){
-
+        val dialog = CreateNBDialog()
+        dialog.onFinished = ::onFinishCreating
+        dialog.show(supportFragmentManager, CREATE_NB_TAG)
     }
 
     private fun <NoteOrBook> onFinishCreating(product : NoteOrBook){
-        MyNotesSystem.createNoteOrBook(product)
+        MyNotesSystem.createNoteOrBook(product).onComplete { refreshUI() }
     }
 }
