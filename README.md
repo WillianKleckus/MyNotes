@@ -7,6 +7,8 @@ A simple note storing app
 
 005-implement-note-and-book-response-to-click
 
+006-create-a-log-type-thing-to-control-errors
+
 ## Done Branches
 
 001-setup-database-type
