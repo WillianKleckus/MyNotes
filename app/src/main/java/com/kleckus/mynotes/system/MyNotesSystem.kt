@@ -20,6 +20,11 @@ class MyNotesSystem : Application() {
 
         lateinit var masterBook : MasterBook
 
+        fun getBookById(id : Int) : Book{
+            masterBook.bookList.forEach { book -> if(book.id == id) return book }
+            return masterBook
+        }
+
         fun <NoteOrBook> createNoteOrBook(product : NoteOrBook) : Promise<Boolean> {
             val ret = Promise<Boolean>()
             when (product) {
@@ -27,7 +32,7 @@ class MyNotesSystem : Application() {
                     masterBook.highestId++
 
                     if(product.ownerId == masterBook.id) masterBook.noteList.add(product)
-                    else { masterBook.bookList.forEach { book -> if(book.id == product.ownerId) book.noteList.add(product) } }
+                    else { getBookById(product.ownerId).noteList.add(product) }
 
                     Database.saveState().onComplete { success ->
                         if(success) log("Finished creating note successfully")
