@@ -18,13 +18,20 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setupRecyclerView()
 
-        addButton.setOnClickListener {
-        }
+        addButton.setOnClickListener { onClickAddButton() }
     }
 
     private fun setupRecyclerView(){
         mainRecyclerView.adapter = adapter
         mainRecyclerView.layoutManager = LinearLayoutManager(this)
         adapter.setContents(MyNotesSystem.bookList, MyNotesSystem.noteList)
+    }
+
+    private fun onClickAddButton(){
+
+    }
+
+    private fun <NoteOrBook> onFinishCreating(product : NoteOrBook){
+        MyNotesSystem.createNoteOrBook(product)
     }
 }

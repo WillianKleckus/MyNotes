@@ -13,7 +13,18 @@ class MyNotesSystem : MyNotesApplication() {
         var noteList = mutableListOf<Note>()
         var bookList = mutableListOf<Book>()
 
-        fun addNote(){
+        fun <NoteOrBook> createNoteOrBook(product : NoteOrBook){
+            when (product) {
+                is Note -> {
+
+                }
+                is Book -> {
+
+                }
+                else -> {
+
+                }
+            }
         }
     }
 }
