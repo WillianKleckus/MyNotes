@@ -2,6 +2,7 @@ package com.kleckus.mynotes.database
 
 import android.content.Context
 import com.kleckus.mynotes.system.*
+import com.kleckus.mynotes.system.Util.Companion.log
 import io.paperdb.Paper
 import java.lang.Exception
 
@@ -30,7 +31,10 @@ class Database{
                     MyNotesSystem.lastBookId = Paper.book(BOOKS.MAIN_BOOK.key).read<Int>(DB_KEYS.BOOK_ID.key)
                     success = true
                 }
-                catch (e : Exception) { success = false }
+                catch (e : Exception) {
+                    success = false
+                    log("Could not load previous state: ${e.message.toString()}")
+                }
             }.andThen { ret.complete(success) }
             return ret
         }
@@ -46,7 +50,10 @@ class Database{
                     Paper.book(BOOKS.MAIN_BOOK.key).write(DB_KEYS.BOOK_ID.key, MyNotesSystem.lastBookId)
                     success = true
                 }
-                catch (e : Exception){ success = false }
+                catch (e : Exception){
+                    success = false
+                    log("Could not save current state: ${e.message.toString()}")
+                }
             }.andThen { ret.complete(success) }
             return ret
         }
