@@ -3,10 +3,6 @@ A simple note storing app
 
 ## Branches
 
-005-implement-note-and-book-response-to-click
-
-007-implement-editing-notes
-
 008-implement-locking-notes-and-books
 
 ## Done Branches
@@ -19,4 +15,8 @@ A simple note storing app
 
 004-implement-note-or-book-creation
 
+005-implement-note-and-book-response-to-click
+
 006-create-a-log-type-thing-to-control-errors
+
+007-implement-editing-notes
