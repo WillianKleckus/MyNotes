@@ -6,17 +6,28 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kleckus.mynotes.R
 import com.kleckus.mynotes.system.Book
+import com.kleckus.mynotes.system.MASTER_BOOK_ID
+import com.kleckus.mynotes.system.MyNotesSystem
 import com.kleckus.mynotes.system.Note
 import kotlinx.android.synthetic.main.note_or_book_item_layout.view.*
 
 class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
 
+    var onBookClicked : (bookId : Int) -> Unit = {}
+    var onNoteClicked : (noteId : Int) -> Unit = {}
+
     private var bookContent = mutableListOf<Book>()
     private var noteContent = mutableListOf<Note>()
 
-    fun setContents(bc : MutableList<Book>, nc : MutableList<Note>){
-        bookContent = bc
-        noteContent = nc
+    fun setContentByBookId(bookId : Int){
+        bookContent.clear()
+        noteContent.clear()
+        val masterBook = MyNotesSystem.masterBook
+        if(bookId == MASTER_BOOK_ID){
+            bookContent.addAll(masterBook.bookList)
+            noteContent.addAll(masterBook.noteList)
+        }
+        else { noteContent.addAll(MyNotesSystem.getBookById(bookId).noteList) }
     }
 
     class VH (itemView : View) : RecyclerView.ViewHolder(itemView) {}
@@ -44,6 +55,9 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
             }
 
             // Handling Clicking
+            itemView.setOnClickListener {
+                onBookClicked(currentBook.id)
+            }
         }
         else{
             val notePosition = position - bookListSize
@@ -58,6 +72,7 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
             }
 
             // Handling Clicking
+            itemView.setOnClickListener { onNoteClicked(currentNote.id) }
         }
     }
 
