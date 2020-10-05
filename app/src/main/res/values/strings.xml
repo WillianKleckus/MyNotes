@@ -5,6 +5,12 @@
     <string name="title">"This is the Title."</string>
     <string name="random_description">"This is a little description."</string>
 
+    <!-- Note or book creation dialog strings -->
+    <string name="title_string">"Title"</string>
+    <string name="note_string">"Note"</string>
+    <string name="book_string">"Book"</string>
+    <string name="done_string">"Done"</string>
+
     <!-- Opened Note Strings -->
     <string name="title_in_note">"This is the note Title."</string>
     <string name="note_content">"Here will be a the content of the selected note. Lorem ipsum is good but I don't remember the full version. Maybe it's because it is big AF..."</string>
