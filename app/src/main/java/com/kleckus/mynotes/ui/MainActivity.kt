@@ -10,8 +10,6 @@ import com.kleckus.mynotes.system.MASTER_BOOK_ID
 import com.kleckus.mynotes.system.MyNotesSystem
 import com.kleckus.mynotes.system.MyNotesSystem.Companion.getBookById
 import com.kleckus.mynotes.system.MyNotesSystem.Companion.getNoteById
-import com.kleckus.mynotes.system.Note
-import com.kleckus.mynotes.system.Util.Companion.navigateTo
 import kotlinx.android.synthetic.main.activity_main.*
 
 private const val CREATE_NB_TAG = "create_note_or_book_tag"
@@ -93,7 +91,8 @@ class MainActivity : AppCompatActivity() {
 
     // Book window buttons
     private fun onClickAddButton(ownerId : Int){
-        val dialog = CreateNBDialog(ownerId)
+        val isInMasterBook = currentOpenBookId == MASTER_BOOK_ID
+        val dialog = CreateNBDialog(ownerId, isInMasterBook)
         dialog.onFinished = ::onFinishCreating
         dialog.show(supportFragmentManager, CREATE_NB_TAG)
     }
