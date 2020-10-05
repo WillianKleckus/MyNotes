@@ -40,6 +40,13 @@ class MainActivity : AppCompatActivity() {
         dialog.show(supportFragmentManager, CREATE_NB_TAG)
     }
 
+    private fun onClickBookOpt(bookId : Int){
+    }
+
+    private fun onClickNoteOpt(noteId : Int){
+
+    }
+
     private fun <NoteOrBook> onFinishCreating(product : NoteOrBook){
         MyNotesSystem.createNoteOrBook(product).onComplete { refreshUI() }
     }
