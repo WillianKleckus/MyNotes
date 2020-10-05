@@ -8,12 +8,11 @@ import com.kleckus.mynotes.system.MyNotesSystem
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-
-
     companion object {
         fun refreshUI(){ adapter.notifyDataSetChanged() }
         private val adapter = MainAdapter()
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
