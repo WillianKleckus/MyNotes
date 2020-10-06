@@ -6,13 +6,11 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kleckus.mynotes.R
 import com.kleckus.mynotes.database.Database
-import com.kleckus.mynotes.system.Book
-import com.kleckus.mynotes.system.MASTER_BOOK_ID
-import com.kleckus.mynotes.system.MyNotesSystem
-import com.kleckus.mynotes.system.Note
+import com.kleckus.mynotes.system.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 private const val CREATE_NB_TAG = "create_note_or_book_tag"
+private const val LOCK_NB_TAG = "lock_note_or_book_tag"
 private const val NO_NOTE_CONST = -1
 
 class MainActivity : AppCompatActivity() {
@@ -56,8 +54,8 @@ class MainActivity : AppCompatActivity() {
         mainRecyclerView.adapter = adapter
         adapter.onBookClicked = ::onClickBookOpt
         adapter.onNoteClicked = ::onClickNoteOpt
-        adapter.onBookLockClicked = ::onBookLockClicked
-        adapter.onNoteLockClicked = ::onNoteLockClicked
+        adapter.onLockClicked = ::onLockClicked
+
 
         mainRecyclerView.layoutManager = LinearLayoutManager(this)
         adapter.setContentByBookId(MASTER_BOOK_ID)
@@ -94,12 +92,16 @@ class MainActivity : AppCompatActivity() {
         refreshUI()
     }
 
-    private fun onNoteLockClicked(noteId : Int){
-
+    private fun onLockClicked(itemId : Int){
+        val item = MyNotesSystem.getItemById(itemId) as Lockable
+        val isLocking = !item.isLocked
+        val dialog = CVPasswordDialog(isLocking, itemId)
+        dialog.onFinish = ::onLocking
+        dialog.show(supportFragmentManager, LOCK_NB_TAG)
     }
 
-    private fun onBookLockClicked(bookId : Int){
-
+    private fun onLocking(itemId: Int, password : Int){
+        MyNotesSystem.toggleLock(itemId, password).onComplete { refreshUI() }
     }
 
     // Book window buttons

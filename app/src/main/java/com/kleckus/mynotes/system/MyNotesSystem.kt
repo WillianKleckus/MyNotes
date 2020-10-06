@@ -3,6 +3,8 @@ package com.kleckus.mynotes.system
 import android.app.Application
 import com.kleckus.mynotes.database.Database
 import com.kleckus.mynotes.system.Util.Companion.log
+import com.kleckus.mynotes.ui.CVPasswordDialog
+import java.lang.Exception
 
 class MyNotesSystem : Application() {
     override fun onCreate() {
@@ -42,6 +44,27 @@ class MyNotesSystem : Application() {
             }
             log("Id not found, returning a bad note")
             return BAD_NOTE
+        }
+
+        fun toggleLock(itemId : Int, password : Int) : Promise<Boolean>{
+            val item : Any = getItemById(itemId) as Lockable
+            //item = try { getItemById(itemId) as Book } catch (e : Exception) { getItemById(itemId) as Note }
+            val ret = Promise<Boolean>()
+            if(item is Lockable){
+                if(item.isLocked && (password == item.password)) {
+                    item.isLocked = false
+                    item.password = NO_PASSWORD
+                }
+                else{
+                    item.isLocked = true
+                    item.password = password
+                }
+                Database.saveState().onComplete { success ->
+                    log("Password toggled")
+                    ret.complete(success)
+                }
+            }
+            return ret
         }
 
         fun <NoteOrBook> createNoteOrBook(product : NoteOrBook) : Promise<Boolean> {

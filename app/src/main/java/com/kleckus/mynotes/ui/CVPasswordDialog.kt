@@ -11,9 +11,9 @@ import kotlinx.android.synthetic.main.create_validade_password_dialog_layout.vie
 private const val LOCK_STRING = "Lock"
 private const val UNLOCK_STRING = "Unlock"
 
-class CVPasswordDialog(private val isLocking : Boolean) : DialogFragment() {
+class CVPasswordDialog(private val isLocking : Boolean, private val itemId : Int) : DialogFragment() {
 
-    var onFinish : (password : String) -> Unit = {}
+    var onFinish : (itemId : Int, password : Int) -> Unit = {_,_ ->}
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
@@ -32,12 +32,12 @@ class CVPasswordDialog(private val isLocking : Boolean) : DialogFragment() {
 
         view.doneButton.setOnClickListener {
             if(isLocking) {
-                val createdPassword = view.inputCreatePassword.text.toString()
-                val passwordConfirmation = view.inputConfirmPassword.text.toString()
+                val createdPassword = view.inputCreatePassword.text.toString().toInt()
+                val passwordConfirmation = view.inputConfirmPassword.text.toString().toInt()
                 onCreating(createdPassword, passwordConfirmation)
             }
             else{
-                val password = view.inputValidatePassword.text.toString()
+                val password = view.inputValidatePassword.text.toString().toInt()
                 onValidating(password)
             }
         }
@@ -46,13 +46,15 @@ class CVPasswordDialog(private val isLocking : Boolean) : DialogFragment() {
         return builder.create()
     }
 
-    private fun onCreating(passwordOne: String, passwordTwo: String){
+    private fun onCreating(passwordOne: Int, passwordTwo: Int){
         if(passwordOne == passwordTwo){
-            onFinish(passwordOne)
+            onFinish(itemId, passwordOne)
+            dismiss()
         }
     }
 
-    private fun onValidating(password : String){
-        onFinish(password)
+    private fun onValidating(password : Int){
+        onFinish(itemId, password)
+        dismiss()
     }
 }

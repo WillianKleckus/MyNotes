@@ -15,8 +15,7 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
 
     var onBookClicked : (bookId : Int) -> Unit = {}
     var onNoteClicked : (noteId : Int) -> Unit = {}
-    var onNoteLockClicked : (noteId : Int) -> Unit = {}
-    var onBookLockClicked : (bookId : Int) -> Unit = {}
+    var onLockClicked : (itemId : Int) -> Unit = {}
 
     private var bookContent = mutableListOf<Book>()
     private var noteContent = mutableListOf<Note>()
@@ -45,38 +44,39 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
     override fun onBindViewHolder(holder: VH, position: Int) {
         val bookListSize = bookContent.size
         val itemView = holder.itemView
+        val currentItemId : Int
 
         if(position < bookListSize){
             // Handle access to the books
             val currentBook = bookContent[position]
+            currentItemId = currentBook.id
 
             // Handling UI
             itemView.title.text = currentBook.title
             itemView.description.text = "Number of notes in this book: ${currentBook.numberOfNotes()}"
-            if(currentBook.isLocked){
-                itemView.boolLockIcon.setImageResource(R.drawable.locked_icon)
-            }
+            if(currentBook.isLocked){ itemView.boolLockIcon.setImageResource(R.drawable.locked_icon) }
+            else { itemView.boolLockIcon.setImageResource(R.drawable.unlocked_icon) }
 
             // Handling Clicking
             itemView.setOnClickListener { onBookClicked(currentBook.id) }
-            itemView.boolLockIcon.setOnClickListener{ onBookLockClicked(currentBook.id) }
         }
         else{
             val notePosition = position - bookListSize
             // Handle access to the notes
             val currentNote = noteContent[notePosition]
+            currentItemId = currentNote.id
 
             // Handling UI
             itemView.title.text = currentNote.title
             itemView.description.text = "Number of letters in this note: ${currentNote.content.length}"
-            if(currentNote.isLocked){
-                itemView.boolLockIcon.setImageResource(R.drawable.locked_icon)
-            }
+            if(currentNote.isLocked){ itemView.boolLockIcon.setImageResource(R.drawable.locked_icon) }
+            else { itemView.boolLockIcon.setImageResource(R.drawable.unlocked_icon) }
 
             // Handling Clicking
             itemView.setOnClickListener { onNoteClicked(currentNote.id) }
-            itemView.boolLockIcon.setOnClickListener{ onNoteLockClicked(currentNote.id) }
+
         }
+        itemView.boolLockIcon.setOnClickListener{ onLockClicked(currentItemId) }
     }
 
 }
