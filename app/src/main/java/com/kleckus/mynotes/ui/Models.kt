@@ -15,6 +15,8 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
 
     var onBookClicked : (bookId : Int) -> Unit = {}
     var onNoteClicked : (noteId : Int) -> Unit = {}
+    var onNoteLockClicked : (noteId : Int) -> Unit = {}
+    var onBookLockClicked : (bookId : Int) -> Unit = {}
 
     private var bookContent = mutableListOf<Book>()
     private var noteContent = mutableListOf<Note>()
@@ -22,12 +24,12 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
     fun setContentByBookId(bookId : Int){
         bookContent.clear()
         noteContent.clear()
-        val masterBook = MyNotesSystem.masterBook
+        val masterBook = MyNotesSystem.accessMasterBook()
         if(bookId == MASTER_BOOK_ID){
             bookContent.addAll(masterBook.bookList)
             noteContent.addAll(masterBook.noteList)
         }
-        else { noteContent.addAll(MyNotesSystem.getBookById(bookId).noteList) }
+        else { noteContent.addAll((MyNotesSystem.getItemById(bookId) as Book).noteList) }
     }
 
     class VH (itemView : View) : RecyclerView.ViewHolder(itemView) {}
@@ -43,6 +45,7 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
     override fun onBindViewHolder(holder: VH, position: Int) {
         val bookListSize = bookContent.size
         val itemView = holder.itemView
+
         if(position < bookListSize){
             // Handle access to the books
             val currentBook = bookContent[position]
@@ -55,9 +58,8 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
             }
 
             // Handling Clicking
-            itemView.setOnClickListener {
-                onBookClicked(currentBook.id)
-            }
+            itemView.setOnClickListener { onBookClicked(currentBook.id) }
+            itemView.boolLockIcon.setOnClickListener{ onBookLockClicked(currentBook.id) }
         }
         else{
             val notePosition = position - bookListSize
@@ -73,6 +75,7 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
 
             // Handling Clicking
             itemView.setOnClickListener { onNoteClicked(currentNote.id) }
+            itemView.boolLockIcon.setOnClickListener{ onNoteLockClicked(currentNote.id) }
         }
     }
 

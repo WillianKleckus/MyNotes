@@ -6,10 +6,10 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kleckus.mynotes.R
 import com.kleckus.mynotes.database.Database
+import com.kleckus.mynotes.system.Book
 import com.kleckus.mynotes.system.MASTER_BOOK_ID
 import com.kleckus.mynotes.system.MyNotesSystem
-import com.kleckus.mynotes.system.MyNotesSystem.Companion.getBookById
-import com.kleckus.mynotes.system.MyNotesSystem.Companion.getNoteById
+import com.kleckus.mynotes.system.Note
 import kotlinx.android.synthetic.main.activity_main.*
 
 private const val CREATE_NB_TAG = "create_note_or_book_tag"
@@ -19,15 +19,17 @@ class MainActivity : AppCompatActivity() {
 
     private var currentOpenBookId = MASTER_BOOK_ID
     private var openNoteId : Int = NO_NOTE_CONST
-    private val adapter = MainAdapter()
+    private lateinit var adapter : MainAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        MyNotesSystem.initSystem().onComplete { success -> setupRecyclerView() }
-        addButton.setOnClickListener { onClickAddButton(currentOpenBookId) }
-        backButton.setOnClickListener { backButtonPressed() }
-        doneButton.setOnClickListener { onDoneEditingNote() }
+        MyNotesSystem.initSystem().onComplete { success ->
+            setupRecyclerView()
+            addButton.setOnClickListener { onClickAddButton(currentOpenBookId) }
+            backButton.setOnClickListener { backButtonPressed() }
+            doneButton.setOnClickListener { onDoneEditingNote() }
+        }
     }
 
     private fun refreshUI(){
@@ -35,14 +37,14 @@ class MainActivity : AppCompatActivity() {
         adapter.notifyDataSetChanged()
 
         if(openNoteId != NO_NOTE_CONST) {
-            val openNote = getNoteById(openNoteId)
+            val openNote = MyNotesSystem.getItemById(openNoteId) as Note
             showNoteView()
             titleTV.text = openNote.title
             textInput.setText(openNote.content)
         }
         else{
             showBookView()
-            titleTV.text = getBookById(currentOpenBookId).title
+            titleTV.text = (MyNotesSystem.getItemById(currentOpenBookId) as Book).title
         }
 
         if(openNoteId == NO_NOTE_CONST && currentOpenBookId == MASTER_BOOK_ID){ dismissOptions() }
@@ -50,9 +52,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView(){
+        adapter = MainAdapter()
         mainRecyclerView.adapter = adapter
         adapter.onBookClicked = ::onClickBookOpt
         adapter.onNoteClicked = ::onClickNoteOpt
+        adapter.onBookLockClicked = ::onBookLockClicked
+        adapter.onNoteLockClicked = ::onNoteLockClicked
 
         mainRecyclerView.layoutManager = LinearLayoutManager(this)
         adapter.setContentByBookId(MASTER_BOOK_ID)
@@ -89,6 +94,14 @@ class MainActivity : AppCompatActivity() {
         refreshUI()
     }
 
+    private fun onNoteLockClicked(noteId : Int){
+
+    }
+
+    private fun onBookLockClicked(bookId : Int){
+
+    }
+
     // Book window buttons
     private fun onClickAddButton(ownerId : Int){
         val isInMasterBook = currentOpenBookId == MASTER_BOOK_ID
@@ -115,7 +128,7 @@ class MainActivity : AppCompatActivity() {
 
     // Note window buttons
     private fun onDoneEditingNote(){
-        getNoteById(openNoteId).content = textInput.text.toString()
+        (MyNotesSystem.getItemById(openNoteId) as Note).content = textInput.text.toString()
         Database.saveState().onComplete { success ->
             openNoteId = NO_NOTE_CONST
             showBookView()

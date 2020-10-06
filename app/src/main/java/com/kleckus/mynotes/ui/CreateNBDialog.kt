@@ -34,7 +34,7 @@ class CreateNBDialog(private val ownerId : Int , private val isInMasterBook : Bo
     }
 
     private fun onDone(title : String, bookRBState : Boolean){
-        val currentHighestId = MyNotesSystem.masterBook.highestId
+        val currentHighestId = MyNotesSystem.accessMasterBook().highestId
         if(bookRBState){
             val book = Book(currentHighestId+1, false, "", title, mutableListOf())
             onFinished(book)

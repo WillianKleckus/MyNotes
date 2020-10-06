@@ -8,7 +8,10 @@ import androidx.fragment.app.DialogFragment
 import com.kleckus.mynotes.R
 import kotlinx.android.synthetic.main.create_validade_password_dialog_layout.view.*
 
-class CVPasswordDialog(private val isCreating : Boolean) : DialogFragment() {
+private const val LOCK_STRING = "Lock"
+private const val UNLOCK_STRING = "Unlock"
+
+class CVPasswordDialog(private val isLocking : Boolean) : DialogFragment() {
 
     var onFinish : (password : String) -> Unit = {}
 
@@ -18,11 +21,17 @@ class CVPasswordDialog(private val isCreating : Boolean) : DialogFragment() {
         val inflater = activity?.layoutInflater
         val view = inflater!!.inflate(R.layout.create_validade_password_dialog_layout, null)
 
-        if(isCreating) view.validatingPasswordView.visibility = View.GONE
-        else view.creatingPasswordView.visibility = View.GONE
+        if(isLocking) {
+            view.validatingPasswordView.visibility = View.GONE
+            view.doneButton.text = LOCK_STRING
+        }
+        else {
+            view.creatingPasswordView.visibility = View.GONE
+            view.doneButton.text = UNLOCK_STRING
+        }
 
         view.doneButton.setOnClickListener {
-            if(isCreating) {
+            if(isLocking) {
                 val createdPassword = view.inputCreatePassword.text.toString()
                 val passwordConfirmation = view.inputConfirmPassword.text.toString()
                 onCreating(createdPassword, passwordConfirmation)
