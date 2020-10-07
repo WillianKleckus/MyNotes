@@ -67,6 +67,29 @@ class MyNotesSystem : Application() {
             return ret
         }
 
+        // Pair<Int, Boolean> => Pair(upperPlaceId, success)
+        fun deleteItem(itemId: Int) : Promise<Pair<Int, Boolean>>{
+            val ret = Promise<Pair<Int,Boolean>>()
+
+            when(val item = getItemById(itemId)){
+                is Book -> {
+                    accessMasterBook().bookList.remove(item)
+                    Database.saveState().onComplete { success -> ret.complete(Pair(MASTER_BOOK_ID , success)) }
+                }
+                is Note -> {
+                    val owner = getItemById(item.ownerId) as Book
+                    owner.noteList.remove(item)
+                    Database.saveState().onComplete { success -> ret.complete(Pair(owner.id , success)) }
+                }
+                else -> {
+                    ret.complete(Pair(MASTER_BOOK_ID , false))
+                    log("Something went wrong")
+                }
+            }
+
+            return ret
+        }
+
         fun <NoteOrBook> createNoteOrBook(product : NoteOrBook) : Promise<Boolean> {
             val ret = Promise<Boolean>()
             when (product) {
