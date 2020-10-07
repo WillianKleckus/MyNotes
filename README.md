@@ -5,8 +5,6 @@ A simple note storing app
 
 010-improve-ui-appearance-in-app
 
-011-make-the-app-icon
-
 ## Done Branches
 
 001-setup-database-type
@@ -26,3 +24,5 @@ A simple note storing app
 008-implement-locking-notes-and-books
 
 009-implement-deleting-notes-and-books
+
+011-make-the-app-icon
