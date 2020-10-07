@@ -132,14 +132,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openItem(itemId : Int, password : Int){
-        val item : Any = try { MyNotesSystem.getItemById(itemId) as Book }
-        catch (e : Exception) { MyNotesSystem.getItemById(itemId) as Note }
-
-        val lockableItem = item as Lockable
-        if(lockableItem.isLocked && (password != lockableItem.password)){
+        if(!validatePassword(itemId, password)){
             Toast.makeText(this, "Wrong password", Toast.LENGTH_SHORT).show()
             return
         }
+
+        val item : Any = try { MyNotesSystem.getItemById(itemId) as Book }
+        catch (e : Exception) { MyNotesSystem.getItemById(itemId) as Note }
 
         when (item) {
             is Book -> {
@@ -167,5 +166,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    private fun validatePassword(itemId: Int, password: Int) : Boolean{
+        val lockableItem = MyNotesSystem.getItemById(itemId) as Lockable
+        return !(lockableItem.isLocked && (password != lockableItem.password))
+    }
 }
