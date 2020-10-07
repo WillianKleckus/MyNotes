@@ -3,7 +3,9 @@ A simple note storing app
 
 ## Branches
 
-009-implement-deleting-notes-and-books
+010-improve-ui-appearance-in-app
+
+011-make-the-app-icon
 
 ## Done Branches
 
@@ -22,3 +24,5 @@ A simple note storing app
 007-implement-editing-notes
 
 008-implement-locking-notes-and-books
+
+009-implement-deleting-notes-and-books
