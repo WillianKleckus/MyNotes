@@ -11,7 +11,16 @@
     <string name="book_string">"Book"</string>
     <string name="done_string">"Done"</string>
 
+    <!-- Create or validate password dialog strings -->
+    <string name="create_password_string">"Create a numeric password:"</string>
+    <string name="confirm_created_password">"Please, repeat password:"</string>
+    <string name="validate_password">"Password:"</string>
+    <string name="password_creation_warning">"WARNING: At the current app state, you have no way to recover this password."</string>
+
+    <!-- Create or validate password dialog strings -->
+    <string name="sample_option_text">"This is an option"</string>
+
     <!-- Opened Note Strings -->
     <string name="title_in_note">"This is the note Title."</string>
-    <string name="note_content">"Here will be a the content of the selected note. Lorem ipsum is good but I don't remember the full version. Maybe it's because it is big AF..."</string>
+    <string name="note_content">"Here will be a the content of the selected note. Lorem ipsum is good but I don't remember the full version. Maybe it's because it is big AF…"</string>
 </resources>

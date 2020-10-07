@@ -8,6 +8,7 @@ import androidx.fragment.app.DialogFragment
 import com.kleckus.mynotes.R
 import com.kleckus.mynotes.system.Book
 import com.kleckus.mynotes.system.MyNotesSystem
+import com.kleckus.mynotes.system.NO_PASSWORD
 import com.kleckus.mynotes.system.Note
 import kotlinx.android.synthetic.main.add_note_or_book_dialog_layout.view.*
 
@@ -34,13 +35,13 @@ class CreateNBDialog(private val ownerId : Int , private val isInMasterBook : Bo
     }
 
     private fun onDone(title : String, bookRBState : Boolean){
-        val currentHighestId = MyNotesSystem.masterBook.highestId
+        val currentHighestId = MyNotesSystem.accessMasterBook().highestId
         if(bookRBState){
-            val book = Book(currentHighestId+1, false, "", title, mutableListOf())
+            val book = Book(currentHighestId+1, false, NO_PASSWORD, title, mutableListOf())
             onFinished(book)
         }
         else{
-            val note = Note(currentHighestId+1, ownerId, false, "", title, "")
+            val note = Note(currentHighestId+1, ownerId, false, NO_PASSWORD, title, "")
             onFinished(note)
         }
 

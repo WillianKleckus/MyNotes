@@ -3,6 +3,8 @@ package com.kleckus.mynotes.system
 import android.app.Application
 import com.kleckus.mynotes.database.Database
 import com.kleckus.mynotes.system.Util.Companion.log
+import com.kleckus.mynotes.ui.CVPasswordDialog
+import java.lang.Exception
 
 class MyNotesSystem : Application() {
     override fun onCreate() {
@@ -14,32 +16,65 @@ class MyNotesSystem : Application() {
     companion object{
         fun initSystem() : Promise<Boolean>{
             val ret = Promise<Boolean>()
-            Database.loadState().onComplete { success -> ret.complete(success) }
+            Database.loadState().onComplete { returnedPair ->
+                masterBook = returnedPair.second
+                ret.complete(returnedPair.first)
+            }
             return ret
         }
 
-        lateinit var masterBook : MasterBook
+        private lateinit var masterBook : MasterBook
 
-        fun getBookById(id : Int) : Book{
-            masterBook.bookList.forEach { book -> if(book.id == id) return book }
-            return masterBook
+        fun accessMasterBook() : MasterBook{
+            return if(this::masterBook.isInitialized) masterBook
+            else {
+                log("Master book not initialized, returning a bad Master Book")
+                BAD_MASTER_BOOK
+            }
         }
 
-        fun getNoteById(id : Int) : Note{
-            masterBook.noteList.forEach { note -> if(note.id == id) return note }
-            masterBook.bookList.forEach { book -> book.noteList.forEach { note -> if(note.id == id) return note } }
-            log("Something went wrong")
+        fun getItemById(itemId : Int) : Any{
+            if(itemId == MASTER_BOOK_ID) {
+                return accessMasterBook()
+            }
+            else{
+                accessMasterBook().bookList.forEach { book -> if(book.id == itemId) return book }
+                accessMasterBook().noteList.forEach { note -> if(note.id == itemId) return note }
+                accessMasterBook().bookList.forEach { book -> book.noteList.forEach { note -> if(note.id == itemId) return note } }
+            }
+            log("Id not found, returning a bad note")
             return BAD_NOTE
+        }
+
+        fun toggleLock(itemId : Int, password : Int) : Promise<Boolean>{
+            val item : Any = getItemById(itemId) as Lockable
+            //item = try { getItemById(itemId) as Book } catch (e : Exception) { getItemById(itemId) as Note }
+            val ret = Promise<Boolean>()
+            if(item is Lockable){
+                if(item.isLocked && (password == item.password)) {
+                    item.isLocked = false
+                    item.password = NO_PASSWORD
+                }
+                else{
+                    item.isLocked = true
+                    item.password = password
+                }
+                Database.saveState().onComplete { success ->
+                    log("Password toggled")
+                    ret.complete(success)
+                }
+            }
+            return ret
         }
 
         fun <NoteOrBook> createNoteOrBook(product : NoteOrBook) : Promise<Boolean> {
             val ret = Promise<Boolean>()
             when (product) {
                 is Note -> {
-                    masterBook.highestId++
+                    accessMasterBook().highestId++
 
                     if(product.ownerId == masterBook.id) masterBook.noteList.add(product)
-                    else { getBookById(product.ownerId).noteList.add(product) }
+                    else { (getItemById(product.ownerId) as Book).noteList.add(product) }
 
                     Database.saveState().onComplete { success ->
                         if(success) log("Finished creating note successfully")
@@ -47,8 +82,8 @@ class MyNotesSystem : Application() {
                     }
                 }
                 is Book -> {
-                    masterBook.highestId++
-                    masterBook.bookList.add(product)
+                    accessMasterBook().highestId++
+                    accessMasterBook().bookList.add(product)
                     Database.saveState().onComplete { success ->
                         if(success) log("Finished creating book successfully")
                         ret.complete(success)

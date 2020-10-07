@@ -13,8 +13,8 @@ import kotlinx.android.synthetic.main.note_or_book_item_layout.view.*
 
 class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
 
-    var onBookClicked : (bookId : Int) -> Unit = {}
-    var onNoteClicked : (noteId : Int) -> Unit = {}
+    var onViewClicked : (itemId : Int) -> Unit = {}
+    var onLockClicked : (itemId : Int) -> Unit = {}
 
     private var bookContent = mutableListOf<Book>()
     private var noteContent = mutableListOf<Note>()
@@ -22,12 +22,12 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
     fun setContentByBookId(bookId : Int){
         bookContent.clear()
         noteContent.clear()
-        val masterBook = MyNotesSystem.masterBook
+        val masterBook = MyNotesSystem.accessMasterBook()
         if(bookId == MASTER_BOOK_ID){
             bookContent.addAll(masterBook.bookList)
             noteContent.addAll(masterBook.noteList)
         }
-        else { noteContent.addAll(MyNotesSystem.getBookById(bookId).noteList) }
+        else { noteContent.addAll((MyNotesSystem.getItemById(bookId) as Book).noteList) }
     }
 
     class VH (itemView : View) : RecyclerView.ViewHolder(itemView) {}
@@ -43,37 +43,33 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
     override fun onBindViewHolder(holder: VH, position: Int) {
         val bookListSize = bookContent.size
         val itemView = holder.itemView
+        val currentItemId : Int
+
         if(position < bookListSize){
             // Handle access to the books
             val currentBook = bookContent[position]
+            currentItemId = currentBook.id
 
             // Handling UI
             itemView.title.text = currentBook.title
             itemView.description.text = "Number of notes in this book: ${currentBook.numberOfNotes()}"
-            if(currentBook.isLocked){
-                itemView.boolLockIcon.setImageResource(R.drawable.locked_icon)
-            }
-
-            // Handling Clicking
-            itemView.setOnClickListener {
-                onBookClicked(currentBook.id)
-            }
+            if(currentBook.isLocked){ itemView.boolLockIcon.setImageResource(R.drawable.locked_icon) }
+            else { itemView.boolLockIcon.setImageResource(R.drawable.unlocked_icon) }
         }
         else{
             val notePosition = position - bookListSize
             // Handle access to the notes
             val currentNote = noteContent[notePosition]
+            currentItemId = currentNote.id
 
             // Handling UI
             itemView.title.text = currentNote.title
             itemView.description.text = "Number of letters in this note: ${currentNote.content.length}"
-            if(currentNote.isLocked){
-                itemView.boolLockIcon.setImageResource(R.drawable.locked_icon)
-            }
-
-            // Handling Clicking
-            itemView.setOnClickListener { onNoteClicked(currentNote.id) }
+            if(currentNote.isLocked){ itemView.boolLockIcon.setImageResource(R.drawable.locked_icon) }
+            else { itemView.boolLockIcon.setImageResource(R.drawable.unlocked_icon) }
         }
+        itemView.setOnClickListener { onViewClicked(currentItemId) }
+        itemView.boolLockIcon.setOnClickListener{ onLockClicked(currentItemId) }
     }
 
 }

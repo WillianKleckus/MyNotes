@@ -17,20 +17,21 @@ class Database{
     companion object{
         fun initializeDatabase(context: Context){ Paper.init(context) }
 
-        fun loadState() : Promise<Boolean>{
-            val ret = Promise<Boolean>()
+        fun loadState() : Promise<Pair<Boolean,MasterBook>>{
+            val ret = Promise<Pair<Boolean,MasterBook>>()
             var success = false
+            var masterBook = BAD_MASTER_BOOK
             Async{
                 try {
                     val newBook = MasterBook(mutableListOf(), 0)
-                    MyNotesSystem.masterBook = Paper.book(TopLevelBooks.MAIN_BOOK.key).read<MasterBook>(DatabaseKeys.MASTER_BOOK.key, newBook)
+                    masterBook = Paper.book(TopLevelBooks.MAIN_BOOK.key).read<MasterBook>(DatabaseKeys.MASTER_BOOK.key, newBook)
                     success = true
                 }
                 catch (e : Exception) {
                     success = false
                     log("Could not load previous state: ${e.message.toString()}")
                 }
-            }.andThen { ret.complete(success) }
+            }.andThen { ret.complete(Pair(success,masterBook)) }
             return ret
         }
 
@@ -39,7 +40,7 @@ class Database{
             var success = false
             Async{
                 try {
-                    Paper.book(TopLevelBooks.MAIN_BOOK.key).write(DatabaseKeys.MASTER_BOOK.key, MyNotesSystem.masterBook)
+                    Paper.book(TopLevelBooks.MAIN_BOOK.key).write(DatabaseKeys.MASTER_BOOK.key, MyNotesSystem.accessMasterBook())
                     success = true
                 }
                 catch (e : Exception){
