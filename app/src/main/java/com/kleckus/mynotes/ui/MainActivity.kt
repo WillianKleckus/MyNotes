@@ -10,17 +10,18 @@ import com.kleckus.mynotes.database.Database
 import com.kleckus.mynotes.system.*
 import com.kleckus.mynotes.system.Util.Companion.log
 import kotlinx.android.synthetic.main.activity_main.*
-import java.lang.Exception
 
 private const val CREATE_NB_TAG = "create_note_or_book_tag"
 private const val LOCK_NB_TAG = "lock_note_or_book_tag"
 private const val PASSWORD_VALIDATION_TAG = "password_validation_tag"
-private const val NO_NOTE_CONST = -1
+private const val CONFIRMATION_TAG = "confirmation_tag"
+
+private const val NO_NOTE_ID = -1
 
 class MainActivity : AppCompatActivity() {
 
     private var currentOpenBookId = MASTER_BOOK_ID
-    private var openNoteId : Int = NO_NOTE_CONST
+    private var currentOpenNoteId : Int = NO_NOTE_ID
     private lateinit var adapter : MainAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,8 +29,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         MyNotesSystem.initSystem().onComplete { success ->
             setupRecyclerView()
-            addButton.setOnClickListener { onClickAddButton(currentOpenBookId) }
             backButton.setOnClickListener { backButtonPressed() }
+            deleteButton.setOnClickListener { deleteButtonPressed() }
+            addButton.setOnClickListener { onClickAddButton(currentOpenBookId) }
             doneButton.setOnClickListener { onDoneEditingNote() }
         }
     }
@@ -38,8 +40,8 @@ class MainActivity : AppCompatActivity() {
         adapter.setContentByBookId(currentOpenBookId)
         adapter.notifyDataSetChanged()
 
-        if(openNoteId != NO_NOTE_CONST) {
-            val openNote = MyNotesSystem.getItemById(openNoteId) as Note
+        if(currentOpenNoteId != NO_NOTE_ID) {
+            val openNote = MyNotesSystem.getItemById(currentOpenNoteId) as Note
             showNoteView()
             titleTV.text = openNote.title
             textInput.setText(openNote.content)
@@ -49,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             titleTV.text = (MyNotesSystem.getItemById(currentOpenBookId) as Book).title
         }
 
-        if(openNoteId == NO_NOTE_CONST && currentOpenBookId == MASTER_BOOK_ID){ dismissOptions() }
+        if(currentOpenNoteId == NO_NOTE_ID && currentOpenBookId == MASTER_BOOK_ID){ dismissOptions() }
         else showOptions()
     }
 
@@ -58,7 +60,6 @@ class MainActivity : AppCompatActivity() {
         mainRecyclerView.adapter = adapter
         adapter.onViewClicked = ::onItemClick
         adapter.onLockClicked = ::onLockClicked
-
 
         mainRecyclerView.layoutManager = LinearLayoutManager(this)
         adapter.setContentByBookId(MASTER_BOOK_ID)
@@ -84,8 +85,8 @@ class MainActivity : AppCompatActivity() {
     // Button pressing management ------------------------------------------------------------------
     // Menu buttons
     private fun backButtonPressed(){
-        if(openNoteId != NO_NOTE_CONST){
-            openNoteId = NO_NOTE_CONST
+        if(currentOpenNoteId != NO_NOTE_ID){
+            currentOpenNoteId = NO_NOTE_ID
             showBookView()
         }
         else{
@@ -95,6 +96,63 @@ class MainActivity : AppCompatActivity() {
         refreshUI()
     }
 
+    private fun deleteButtonPressed(){
+        if(currentOpenNoteId != NO_NOTE_ID) deleteValidation(currentOpenNoteId)
+        else deleteValidation(currentOpenBookId)
+    }
+
+    private fun deleteValidation(itemId: Int){
+        val dialog = ConfirmationDialog()
+        dialog.onConfirmation =  { confirmed ->
+            if(confirmed) onDeleting(itemId)
+        }
+        dialog.show(supportFragmentManager, CONFIRMATION_TAG)
+    }
+
+    private fun onDeleting(itemId : Int){
+        MyNotesSystem.deleteItem(itemId).onComplete { returnedPair ->
+            currentOpenNoteId = NO_NOTE_ID
+            currentOpenBookId = returnedPair.first
+            refreshUI()
+        }
+    }
+
+    private fun onItemClick(itemId: Int){
+        val validationItem = MyNotesSystem.getItemById(itemId) as Lockable
+        if (validationItem.isLocked){
+            val dialog = CVPasswordDialog(false, itemId)
+            dialog.onFinish = :: openItem
+            dialog.show(supportFragmentManager, PASSWORD_VALIDATION_TAG)
+        }
+        else{
+            openItem(itemId, NO_PASSWORD)
+        }
+    }
+
+    private fun openItem(itemId : Int, password : Int){
+        if(password != NO_PASSWORD && !validatePassword(itemId, password)){
+            Toast.makeText(this, "Wrong password", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        when (val item = MyNotesSystem.getItemById(itemId)) {
+            is Book -> {
+                currentOpenBookId = itemId
+                adapter.setContentByBookId(currentOpenBookId)
+                refreshUI()
+            }
+            is Note -> {
+                currentOpenNoteId = itemId
+                showNoteView()
+                refreshUI()
+            }
+            else -> {
+                log("Something went wrong")
+            }
+        }
+    }
+
+    // Book and Note window button handlers --------------------------------------------------------
     private fun onLockClicked(itemId : Int){
         val item = MyNotesSystem.getItemById(itemId) as Lockable
         val isLocking = !item.isLocked
@@ -119,53 +177,18 @@ class MainActivity : AppCompatActivity() {
         MyNotesSystem.createNoteOrBook(product).onComplete { refreshUI() }
     }
 
-    private fun onItemClick(itemId: Int){
-        val validationItem = MyNotesSystem.getItemById(itemId) as Lockable
-        if (validationItem.isLocked){
-            val dialog = CVPasswordDialog(false, itemId)
-            dialog.onFinish = :: openItem
-            dialog.show(supportFragmentManager, PASSWORD_VALIDATION_TAG)
-        }
-        else{
-            openItem(itemId, NO_PASSWORD)
-        }
-    }
-
-    private fun openItem(itemId : Int, password : Int){
-        val item : Any = try { MyNotesSystem.getItemById(itemId) as Book }
-        catch (e : Exception) { MyNotesSystem.getItemById(itemId) as Note }
-
-        val lockableItem = item as Lockable
-        if(lockableItem.isLocked && (password != lockableItem.password)){
-            Toast.makeText(this, "Wrong password", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        when (item) {
-            is Book -> {
-                currentOpenBookId = itemId
-                adapter.setContentByBookId(currentOpenBookId)
-                refreshUI()
-            }
-            is Note -> {
-                openNoteId = itemId
-                showNoteView()
-                refreshUI()
-            }
-            else -> {
-                log("Something went wrong")
-            }
-        }
-    }
-
     // Note window buttons
     private fun onDoneEditingNote(){
-        (MyNotesSystem.getItemById(openNoteId) as Note).content = textInput.text.toString()
+        (MyNotesSystem.getItemById(currentOpenNoteId) as Note).content = textInput.text.toString()
         Database.saveState().onComplete { success ->
-            openNoteId = NO_NOTE_CONST
+            currentOpenNoteId = NO_NOTE_ID
             showBookView()
         }
     }
 
-
+    // Validation functions ------------------------------------------------------------------------
+    private fun validatePassword(itemId: Int, password: Int) : Boolean{
+        val lockableItem = MyNotesSystem.getItemById(itemId) as Lockable
+        return !(lockableItem.isLocked && (password != lockableItem.password))
+    }
 }

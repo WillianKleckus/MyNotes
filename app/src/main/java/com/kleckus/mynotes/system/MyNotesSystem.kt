@@ -3,8 +3,6 @@ package com.kleckus.mynotes.system
 import android.app.Application
 import com.kleckus.mynotes.database.Database
 import com.kleckus.mynotes.system.Util.Companion.log
-import com.kleckus.mynotes.ui.CVPasswordDialog
-import java.lang.Exception
 
 class MyNotesSystem : Application() {
     override fun onCreate() {
@@ -48,7 +46,6 @@ class MyNotesSystem : Application() {
 
         fun toggleLock(itemId : Int, password : Int) : Promise<Boolean>{
             val item : Any = getItemById(itemId) as Lockable
-            //item = try { getItemById(itemId) as Book } catch (e : Exception) { getItemById(itemId) as Note }
             val ret = Promise<Boolean>()
             if(item is Lockable){
                 if(item.isLocked && (password == item.password)) {
@@ -64,6 +61,29 @@ class MyNotesSystem : Application() {
                     ret.complete(success)
                 }
             }
+            return ret
+        }
+
+        // Pair<Int, Boolean> => Pair(upperPlaceId, success)
+        fun deleteItem(itemId: Int) : Promise<Pair<Int, Boolean>>{
+            val ret = Promise<Pair<Int,Boolean>>()
+
+            when(val item = getItemById(itemId)){
+                is Book -> {
+                    accessMasterBook().bookList.remove(item)
+                    Database.saveState().onComplete { success -> ret.complete(Pair(MASTER_BOOK_ID , success)) }
+                }
+                is Note -> {
+                    val owner = getItemById(item.ownerId) as Book
+                    owner.noteList.remove(item)
+                    Database.saveState().onComplete { success -> ret.complete(Pair(owner.id , success)) }
+                }
+                else -> {
+                    ret.complete(Pair(MASTER_BOOK_ID , false))
+                    log("Something went wrong")
+                }
+            }
+
             return ret
         }
 
