@@ -20,3 +20,5 @@ A simple note storing app
 006-create-a-log-type-thing-to-control-errors
 
 007-implement-editing-notes
+
+008-implement-locking-notes-and-books
