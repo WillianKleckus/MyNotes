@@ -17,7 +17,12 @@
     <string name="validate_password">"Password:"</string>
     <string name="password_creation_warning">"WARNING: At the current app state, you have no way to recover this password."</string>
 
-    <!-- Create or validate password dialog strings -->
+    <!-- Confirmation dialog strings -->
+    <string name="yes_string">"Yes"</string>
+    <string name="no_string">"No"</string>
+    <string name="are_you_sure_string">"Are you sure?"</string>
+
+    <!-- Option list strings -->
     <string name="sample_option_text">"This is an option"</string>
 
     <!-- Opened Note Strings -->

@@ -107,6 +107,14 @@ class MainActivity : AppCompatActivity() {
         MyNotesSystem.toggleLock(itemId, password).onComplete { refreshUI() }
     }
 
+    private fun  onDeleteClicked(itemId: Int){
+
+    }
+
+    private fun onDeleting(itemId: Int, password: Int){
+
+    }
+
     // Book window buttons
     private fun onClickAddButton(ownerId : Int){
         val isInMasterBook = currentOpenBookId == MASTER_BOOK_ID
@@ -119,6 +127,16 @@ class MainActivity : AppCompatActivity() {
         MyNotesSystem.createNoteOrBook(product).onComplete { refreshUI() }
     }
 
+    // Note window buttons
+    private fun onDoneEditingNote(){
+        (MyNotesSystem.getItemById(openNoteId) as Note).content = textInput.text.toString()
+        Database.saveState().onComplete { success ->
+            openNoteId = NO_NOTE_CONST
+            showBookView()
+        }
+    }
+
+    // General window buttons
     private fun onItemClick(itemId: Int){
         val validationItem = MyNotesSystem.getItemById(itemId) as Lockable
         if (validationItem.isLocked){
@@ -132,7 +150,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openItem(itemId : Int, password : Int){
-        if(!validatePassword(itemId, password)){
+        if(password != NO_PASSWORD && !validatePassword(itemId, password)){
             Toast.makeText(this, "Wrong password", Toast.LENGTH_SHORT).show()
             return
         }
@@ -157,15 +175,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // Note window buttons
-    private fun onDoneEditingNote(){
-        (MyNotesSystem.getItemById(openNoteId) as Note).content = textInput.text.toString()
-        Database.saveState().onComplete { success ->
-            openNoteId = NO_NOTE_CONST
-            showBookView()
-        }
-    }
-
+    // Validation functions ------------------------------------------------------------------------
     private fun validatePassword(itemId: Int, password: Int) : Boolean{
         val lockableItem = MyNotesSystem.getItemById(itemId) as Lockable
         return !(lockableItem.isLocked && (password != lockableItem.password))
