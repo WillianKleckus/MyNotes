@@ -10,7 +10,6 @@ import com.kleckus.mynotes.database.Database
 import com.kleckus.mynotes.system.*
 import com.kleckus.mynotes.system.Util.Companion.log
 import kotlinx.android.synthetic.main.activity_main.*
-import java.lang.Exception
 
 private const val CREATE_NB_TAG = "create_note_or_book_tag"
 private const val LOCK_NB_TAG = "lock_note_or_book_tag"

@@ -3,8 +3,6 @@ package com.kleckus.mynotes.system
 import android.app.Application
 import com.kleckus.mynotes.database.Database
 import com.kleckus.mynotes.system.Util.Companion.log
-import com.kleckus.mynotes.ui.CVPasswordDialog
-import java.lang.Exception
 
 class MyNotesSystem : Application() {
     override fun onCreate() {
