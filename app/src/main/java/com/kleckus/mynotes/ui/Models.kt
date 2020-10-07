@@ -13,8 +13,7 @@ import kotlinx.android.synthetic.main.note_or_book_item_layout.view.*
 
 class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
 
-    var onBookClicked : (bookId : Int) -> Unit = {}
-    var onNoteClicked : (noteId : Int) -> Unit = {}
+    var onViewClicked : (itemId : Int) -> Unit = {}
     var onLockClicked : (itemId : Int) -> Unit = {}
 
     private var bookContent = mutableListOf<Book>()
@@ -56,9 +55,6 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
             itemView.description.text = "Number of notes in this book: ${currentBook.numberOfNotes()}"
             if(currentBook.isLocked){ itemView.boolLockIcon.setImageResource(R.drawable.locked_icon) }
             else { itemView.boolLockIcon.setImageResource(R.drawable.unlocked_icon) }
-
-            // Handling Clicking
-            itemView.setOnClickListener { onBookClicked(currentBook.id) }
         }
         else{
             val notePosition = position - bookListSize
@@ -71,11 +67,8 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
             itemView.description.text = "Number of letters in this note: ${currentNote.content.length}"
             if(currentNote.isLocked){ itemView.boolLockIcon.setImageResource(R.drawable.locked_icon) }
             else { itemView.boolLockIcon.setImageResource(R.drawable.unlocked_icon) }
-
-            // Handling Clicking
-            itemView.setOnClickListener { onNoteClicked(currentNote.id) }
-
         }
+        itemView.setOnClickListener { onViewClicked(currentItemId) }
         itemView.boolLockIcon.setOnClickListener{ onLockClicked(currentItemId) }
     }
 
