@@ -3,7 +3,7 @@ A simple note storing app
 
 ## Branches
 
-008-implement-locking-notes-and-books
+009-implement-deleting-notes-and-books
 
 ## Done Branches
 
