@@ -48,7 +48,6 @@ class MyNotesSystem : Application() {
 
         fun toggleLock(itemId : Int, password : Int) : Promise<Boolean>{
             val item : Any = getItemById(itemId) as Lockable
-            //item = try { getItemById(itemId) as Book } catch (e : Exception) { getItemById(itemId) as Note }
             val ret = Promise<Boolean>()
             if(item is Lockable){
                 if(item.isLocked && (password == item.password)) {

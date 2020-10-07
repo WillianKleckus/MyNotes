@@ -136,10 +136,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        val item : Any = try { MyNotesSystem.getItemById(itemId) as Book }
-        catch (e : Exception) { MyNotesSystem.getItemById(itemId) as Note }
-
-        when (item) {
+        when (val item = MyNotesSystem.getItemById(itemId)) {
             is Book -> {
                 currentOpenBookId = itemId
                 adapter.setContentByBookId(currentOpenBookId)
