@@ -1,7 +1,7 @@
 package com.kleckus.mynotes.system
 
 class Note(val id : Int, val ownerId : Int, isLocked : Boolean, password : Int, var title : String, var content : String) : Lockable(isLocked, password){
-    fun numberOfWords() : Int = content.trim().split(' ').size
+    fun numberOfWords() : Int = content.trim().split(' ', '\n').size
 }
 
 open class Book(val id : Int, isLocked : Boolean, password : Int, var title : String, var noteList : MutableList<Note>) : Lockable(isLocked, password){
