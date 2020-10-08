@@ -31,7 +31,8 @@
             android:textColor="@color/content_text_color"
             android:text="@string/note_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"/>
 
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
