@@ -4,9 +4,14 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.kleckus.mynotes.R
 import kotlinx.android.synthetic.main.create_validade_password_dialog_layout.view.*
+
+private const val NONE_CREATED = -1
+private const val NONE_CONFIRMED = -2
+private const val NONE_PASSED = -3
 
 class CVPasswordDialog(private val isLocking : Boolean, private val itemId : Int) : DialogFragment() {
 
@@ -27,12 +32,21 @@ class CVPasswordDialog(private val isLocking : Boolean, private val itemId : Int
 
         view.doneButton.setOnClickListener {
             if(isLocking) {
-                val createdPassword = view.inputCreatePassword.text.toString().toInt()
-                val passwordConfirmation = view.inputConfirmPassword.text.toString().toInt()
+                val inputCreatedPassword = view.inputCreatePassword.text.toString()
+                var createdPassword = NONE_CREATED
+                if(inputCreatedPassword.isNotEmpty()) createdPassword = inputCreatedPassword.toInt()
+
+                val inputConfirmationPassword = view.inputConfirmPassword.text.toString()
+                var passwordConfirmation =  NONE_CONFIRMED
+                if(inputConfirmationPassword.isNotEmpty()) passwordConfirmation = inputConfirmationPassword.toInt()
+
                 onCreating(createdPassword, passwordConfirmation)
             }
             else{
-                val password = view.inputValidatePassword.text.toString().toInt()
+                val inputPassword = view.inputValidatePassword.text.toString()
+                var password = NONE_PASSED
+                if(inputPassword.isNotEmpty()) password = inputPassword.toInt()
+
                 onValidating(password)
             }
         }
@@ -45,6 +59,9 @@ class CVPasswordDialog(private val isLocking : Boolean, private val itemId : Int
         if(passwordOne == passwordTwo){
             onFinish(itemId, passwordOne)
             dismiss()
+        }
+        else{
+            Toast.makeText(context, "Passwords don't match or fields are empty.", Toast.LENGTH_SHORT).show()
         }
     }
 
