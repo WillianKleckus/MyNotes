@@ -11,6 +11,9 @@ import com.kleckus.mynotes.system.MyNotesSystem
 import com.kleckus.mynotes.system.Note
 import kotlinx.android.synthetic.main.note_or_book_item_layout.view.*
 
+private const val NOTE_TYPE = "Note"
+private const val BOOK_TYPE = "Book"
+
 class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
 
     var onViewClicked : (itemId : Int) -> Unit = {}
@@ -51,8 +54,9 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
             currentItemId = currentBook.id
 
             // Handling UI
+            itemView.itemType.text = BOOK_TYPE
             itemView.title.text = currentBook.title
-            itemView.description.text = "Number of notes in this book: ${currentBook.numberOfNotes()}"
+            itemView.description.text = "Notes: ${currentBook.numberOfNotes()}"
             if(currentBook.isLocked){ itemView.boolLockIcon.setImageResource(R.drawable.locked_icon) }
             else { itemView.boolLockIcon.setImageResource(R.drawable.unlocked_icon) }
         }
@@ -63,8 +67,9 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.VH>(){
             currentItemId = currentNote.id
 
             // Handling UI
+            itemView.itemType.text = NOTE_TYPE
             itemView.title.text = currentNote.title
-            itemView.description.text = "Number of letters in this note: ${currentNote.content.length}"
+            itemView.description.text = "Words: ${currentNote.numberOfWords()}"
             if(currentNote.isLocked){ itemView.boolLockIcon.setImageResource(R.drawable.locked_icon) }
             else { itemView.boolLockIcon.setImageResource(R.drawable.unlocked_icon) }
         }
