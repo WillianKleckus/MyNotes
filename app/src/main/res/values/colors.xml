@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorPrimary">#F49F3F</color>
+    <color name="colorPrimaryDark">#FBD249</color>
+    <color name="colorAccent">#AED143</color>
 
     <!-- Text Color -->
     <color name="title_text_color">#515151</color>
     <color name="content_text_color">#101010</color>
     <color name="warning_color">#AAA044</color>
+
+    <!-- Pallet 1 -->
+    <color name="color_one">#FBD249</color>
+    <color name="color_two">#F49F3F</color>
+    <color name="color_three">#AED143</color>
 
 </resources>
