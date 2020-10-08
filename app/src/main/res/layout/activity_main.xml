@@ -89,8 +89,8 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/content_size"
                     android:textColor="@color/content_text_color"
-                    android:inputType="textAutoComplete"
-                    android:layout_marginTop="10dp"/>
+                    android:inputType="textMultiLine"
+                    android:layout_marginTop="10dp" />
             </LinearLayout>
         </ScrollView>
 

@@ -36,6 +36,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        when {
+            currentOpenNoteId != NO_NOTE_ID -> {
+                currentOpenBookId = (MyNotesSystem.getItemById(currentOpenNoteId) as Note).ownerId
+                currentOpenNoteId = NO_NOTE_ID
+                refreshUI()
+            }
+            currentOpenBookId != MASTER_BOOK_ID -> {
+                currentOpenBookId = MASTER_BOOK_ID
+                refreshUI()
+            }
+            else -> finish()
+        }
+    }
+
     private fun refreshUI(){
         adapter.setContentByBookId(currentOpenBookId)
         adapter.notifyDataSetChanged()
