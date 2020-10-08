@@ -1,0 +1,32 @@
+## Info
+- Branches format: xxx-name-of-the-branch, where the xxx would be the branch number.
+
+## Branches
+
+---none-for-now
+
+## Done Branches
+
+001-setup-database-type
+
+002-create-note-structure
+
+003-implement-a-simple-note-appearance
+
+004-implement-note-or-book-creation
+
+005-implement-note-and-book-response-to-click
+
+006-create-a-log-type-thing-to-control-errors
+
+007-implement-editing-notes
+
+008-implement-locking-notes-and-books
+
+009-implement-deleting-notes-and-books
+
+010-improve-ui-appearance-in-app
+
+011-make-the-app-icon
+
+012-fix-input-error-handlers
