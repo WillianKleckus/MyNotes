@@ -39,7 +39,7 @@
             app:layout_constraintStart_toEndOf="@+id/backButton"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/backButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
             app:layout_constraintTop_toTopOf="@+id/titleTV"
             app:srcCompat="@drawable/go_back_icon" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/deleteButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -101,7 +101,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/done_icon" />
+            app:srcCompat="@drawable/done_icon"
+            android:backgroundTint="@color/colorAccent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
