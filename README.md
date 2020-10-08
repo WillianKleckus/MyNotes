@@ -3,7 +3,7 @@ A simple note storing app
 
 ## Branches
 
-012-fix-input-error-handlers
+---none-for-now
 
 ## Done Branches
 
@@ -28,3 +28,5 @@ A simple note storing app
 010-improve-ui-appearance-in-app
 
 011-make-the-app-icon
+
+012-fix-input-error-handlers
