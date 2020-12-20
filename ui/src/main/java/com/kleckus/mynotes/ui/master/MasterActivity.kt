@@ -189,7 +189,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
     }
 
     private fun setLoading(isLoading : Boolean){
-
+        loadingView.isGone = !isLoading
     }
 
     private fun handleError(message: String, e : Throwable){

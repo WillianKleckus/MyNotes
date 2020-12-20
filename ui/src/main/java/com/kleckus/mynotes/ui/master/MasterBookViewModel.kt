@@ -24,20 +24,14 @@ class MasterBookViewModel(
         Dalek{ getItemListById(idList) }
 
     fun save(item : Any) : Flow<DalekEvent<Unit>> =
-        Dalek{
-            service.save(item)
-        }
+        Dalek{ service.save(item) }
 
     fun deleteById(id : String) : Flow<DalekEvent<Unit>> =
-        Dalek{
-            service.delete(id)
-        }
+        Dalek{ service.delete(id) }
 
     fun getNextAvailableId() : Flow<DalekEvent<String>> =
         Dalek{ service.generateId() }
 
     private suspend fun getItemListById(idList : List<String>) : List<Any> =
-        idList.map {
-            service.load(it)
-        }
+        idList.map { service.load(it) }
 }

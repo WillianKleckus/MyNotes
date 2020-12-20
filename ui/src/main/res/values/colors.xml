@@ -14,4 +14,7 @@
     <color name="color_two">#F49F3F</color>
     <color name="color_three">#AED143</color>
 
+    <!-- Loading Background -->
+    <color name="loading_background">#807D7D7D</color>
+
 </resources>
