@@ -13,6 +13,7 @@ object Constants {
 
     // Public constants
     const val MASTER_BOOK_ID = "master-book"
+    const val APP_TAG = "My Notes"
 
     val BAD_NOTE = Note(
         id = BAD_ID,

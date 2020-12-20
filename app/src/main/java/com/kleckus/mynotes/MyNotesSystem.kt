@@ -3,6 +3,7 @@ package com.kleckus.mynotes
 import android.app.Application
 import com.kleckus.mynotes.data.di.DataModule
 import com.kleckus.mynotes.database.Database
+import com.kleckus.mynotes.logger.di.LogModule
 import com.kleckus.mynotes.paper_database.di.PaperModule
 import com.kleckus.mynotes.system.*
 import com.kleckus.mynotes.system.Util.Companion.log
@@ -20,6 +21,7 @@ class MyNotesSystem : Application(), DIAware{
         import(PaperModule())
         import(DataModule())
         import(UIModule())
+        import(LogModule())
     }
 
     companion object{
