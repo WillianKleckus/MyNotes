@@ -6,6 +6,7 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import cafe.adriel.dalek.*
 import com.kleckus.mynotes.domain.Constants.MASTER_BOOK_ID
+import com.kleckus.mynotes.domain.Constants.NO_PASSWORD
 import com.kleckus.mynotes.domain.MyNotesErrors
 import com.kleckus.mynotes.domain.models.Book
 import com.kleckus.mynotes.domain.models.Note
@@ -13,6 +14,10 @@ import com.kleckus.mynotes.domain.services.Logger
 import com.kleckus.mynotes.ui.R
 import com.kleckus.mynotes.ui.adapters.BookItem
 import com.kleckus.mynotes.ui.adapters.NoteItem
+import com.kleckus.mynotes.ui.dialogs.CreationType
+import com.kleckus.mynotes.ui.dialogs.CreationType.BOOK
+import com.kleckus.mynotes.ui.dialogs.CreationType.NOTE
+import com.kleckus.mynotes.ui.dialogs.NoteOrBookCreationDialog
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.master_activity.*
@@ -30,7 +35,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
     private val logger by instance<Logger>()
 
     private val adapter = GroupAdapter<GroupieViewHolder>()
-    private val ioScope = CoroutineScope(Dispatchers.IO)
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +44,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
         goTo(MASTER_BOOK_ID)
     }
 
-    private fun goTo(id : String, scope : CoroutineScope = ioScope){
+    private fun goTo(id : String, scope : CoroutineScope = mainScope){
         viewModel.getItemById(id).collectIn(scope){ event ->
             when(event){
                 is Start -> setLoading(true)
@@ -56,29 +61,40 @@ class MasterActivity : AppCompatActivity(), DIAware {
         }
     }
 
-    private fun save(item : Any, scope : CoroutineScope = ioScope){
+    private fun save(ownerId: String = MASTER_BOOK_ID, item : Any, scope : CoroutineScope = mainScope){
         viewModel.save(item).collectIn(scope){ event ->
             when(event){
                 is Start -> setLoading(true)
-                is Success -> logger.log("Saved successfully: ${item.toString()}")
+                is Success -> goTo(ownerId)
                 is Failure -> handleError("Error on save()", event.exception)
                 is Finish -> setLoading(false)
             }
         }
     }
 
-    private fun delete(id : String, scope : CoroutineScope = ioScope){
+    private fun delete(ownerId: String = MASTER_BOOK_ID, id : String, scope : CoroutineScope = mainScope){
         viewModel.deleteById(id).collectIn(scope){ event ->
             when(event){
                 is Start -> setLoading(true)
-                is Success -> logger.log("Deleted successfully from id: $id")
+                is Success -> goTo(ownerId)
                 is Failure -> handleError("Error on deleted()", event.exception)
                 is Finish -> setLoading(false)
             }
         }
     }
 
-    private fun setBookView(book : Book, scope : CoroutineScope = ioScope){
+    private fun nextAvailableId(scope : CoroutineScope = mainScope, andThen : (id : String) -> Unit){
+        viewModel.getNextAvailableId().collectIn(scope){ event ->
+            when(event){
+                is Start -> setLoading(true)
+                is Success -> andThen(event.value)
+                is Failure -> handleError("Error on deleted()", event.exception)
+                is Finish -> setLoading(false)
+            }
+        }
+    }
+
+    private fun setBookView(book : Book, scope : CoroutineScope = mainScope){
         val isMasterBook = book.id == MASTER_BOOK_ID
         optionsLayout.isGone = isMasterBook
 
@@ -86,16 +102,14 @@ class MasterActivity : AppCompatActivity(), DIAware {
         noteView.isGone = true
 
         if(!isMasterBook){
-            addButton.setOnClickListener(null)
             backButton.setOnClickListener { goTo(MASTER_BOOK_ID) }
-            deleteButton.setOnClickListener {
-                delete(book.id)
-                goTo(MASTER_BOOK_ID)
-            }
+            deleteButton.setOnClickListener { delete(id = book.id) }
         } else{
-            addButton.setOnClickListener {  }
+            deleteButton.setOnClickListener(null)
+            backButton.setOnClickListener(null)
         }
 
+        addButton.setOnClickListener { createNoteOrBook(book.id) }
         titleTV.text = book.title
         setBookAdapter(book.noteIds)
     }
@@ -108,24 +122,26 @@ class MasterActivity : AppCompatActivity(), DIAware {
 
         backButton.setOnClickListener { goTo(note.ownerId) }
         deleteButton.setOnClickListener {
-            delete(note.id)
+            delete(id = note.id)
             goTo(note.ownerId)
         }
 
         titleTV.text = note.title
         textInput.setText(note.content)
         doneButton.setOnClickListener {
-            save(note)
-            goTo(MASTER_BOOK_ID)
+            note.content = textInput.text.toString()
+            save(note.ownerId, note)
         }
     }
 
     private fun setBookAdapter(idList : List<String>){
-        viewModel.getItemsFromIds(idList).collectIn(ioScope){ event ->
+        adapter.clear()
+        viewModel.getItemsFromIds(idList).collectIn(mainScope){ event ->
             when(event){
                 is Start -> setLoading(true)
                 is Success -> {
                     val result = event.value
+                    logger.log(result.toString())
                     result.forEach { item ->
                         when(item){
                             is Book -> adapter.add(BookItem(item){ setBookView(item)})
@@ -141,7 +157,35 @@ class MasterActivity : AppCompatActivity(), DIAware {
     }
 
     private fun createNoteOrBook(ownerId : String){
+        NoteOrBookCreationDialog.openDialog(ownerId, ::doCreate, this)
+    }
 
+    private fun doCreate(title : String, ownerId: String, type : CreationType){
+        nextAvailableId { id ->
+            when (type) {
+                BOOK -> {
+                    val book = Book(
+                        id = id,
+                        isLocked = false,
+                        password = NO_PASSWORD,
+                        title = title,
+                        noteIds = mutableListOf()
+                    )
+                    save(item = book)
+                }
+                NOTE -> {
+                    val note = Note(
+                        id = id,
+                        ownerId = ownerId,
+                        isLocked = false,
+                        password = NO_PASSWORD,
+                        title = title,
+                        content = ""
+                    )
+                    save(note.ownerId, note)
+                }
+            }
+        }
     }
 
     private fun setLoading(isLoading : Boolean){

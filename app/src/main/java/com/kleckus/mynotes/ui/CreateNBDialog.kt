@@ -20,7 +20,7 @@ class CreateNBDialog(private val ownerId : Int , private val isInMasterBook : Bo
     {
         val builder = AlertDialog.Builder(activity)
         val inflater = activity?.layoutInflater
-        val view = inflater!!.inflate(R.layout.add_note_or_book_dialog_layout, null)
+        val view = inflater!!.inflate(R.layout.add_note_or_book_dialog, null)
 
         if(!isInMasterBook) view.noteOrBookRadioGroup.visibility = View.GONE
 

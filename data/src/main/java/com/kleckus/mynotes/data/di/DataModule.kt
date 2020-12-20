@@ -16,7 +16,7 @@ object DataModule{
         }
 
         bind<CacheHandler>() with singleton {
-            CacheHandler(database = instance())
+            CacheHandler(database = instance(), logger = instance())
         }
 
         bind<Storage>() with singleton {
