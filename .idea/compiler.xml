@@ -4,6 +4,7 @@
     <bytecodeTargetLevel target="1.7">
       <module name="My_Notes.app" target="1.8" />
       <module name="My_Notes.data" target="1.8" />
+      <module name="My_Notes.ui" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

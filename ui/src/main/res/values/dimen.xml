@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Note and books dimensions -->
+    <dimen name="title_size">25sp</dimen>
+    <dimen name="content_size">20sp</dimen>
+
+    <!-- App dimensions -->
+    <dimen name="warning_size">25sp</dimen>
+    <dimen name="confirmation_dialog_text_size">25sp</dimen>
+
+</resources>
