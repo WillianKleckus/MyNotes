@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.kleckus.mynotes.MyNotesSystem
 import com.kleckus.mynotes.R
 import com.kleckus.mynotes.database.Database
 import com.kleckus.mynotes.system.*

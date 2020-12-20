@@ -7,7 +7,7 @@ import android.view.View
 import androidx.fragment.app.DialogFragment
 import com.kleckus.mynotes.R
 import com.kleckus.mynotes.system.Book
-import com.kleckus.mynotes.system.MyNotesSystem
+import com.kleckus.mynotes.MyNotesSystem
 import com.kleckus.mynotes.system.NO_PASSWORD
 import com.kleckus.mynotes.system.Note
 import kotlinx.android.synthetic.main.add_note_or_book_dialog_layout.view.*

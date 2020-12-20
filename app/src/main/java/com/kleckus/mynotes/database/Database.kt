@@ -1,6 +1,7 @@
 package com.kleckus.mynotes.database
 
 import android.content.Context
+import com.kleckus.mynotes.MyNotesSystem
 import com.kleckus.mynotes.system.*
 import com.kleckus.mynotes.system.Util.Companion.log
 import io.paperdb.Paper

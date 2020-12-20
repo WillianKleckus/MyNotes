@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kleckus.mynotes.R
 import com.kleckus.mynotes.system.Book
 import com.kleckus.mynotes.system.MASTER_BOOK_ID
-import com.kleckus.mynotes.system.MyNotesSystem
+import com.kleckus.mynotes.MyNotesSystem
 import com.kleckus.mynotes.system.Note
 import kotlinx.android.synthetic.main.note_or_book_item_layout.view.*
 

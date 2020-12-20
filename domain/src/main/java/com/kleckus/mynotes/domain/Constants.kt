@@ -7,7 +7,7 @@ object Constants {
     // Internal constants
     private const val MASTER_BOOK_ID = -1
     private const val NO_PASSWORD = -2
-    private const val BAD_ID = -3
+    private const val BAD_ID = "invalid-book-or-note-id"
     private const val BAD_TITLE = "Error instance"
     private const val BAD_NOTE_CONTENT = "This is a note that appears when something wrong occurs"
 

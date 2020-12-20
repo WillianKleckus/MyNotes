@@ -1,18 +1,27 @@
-package com.kleckus.mynotes.system
+package com.kleckus.mynotes
 
 import android.app.Application
+import com.kleckus.mynotes.data.di.DataModule
 import com.kleckus.mynotes.database.Database
+import com.kleckus.mynotes.paper_database.di.PaperModule
+import com.kleckus.mynotes.system.*
 import com.kleckus.mynotes.system.Util.Companion.log
+import org.kodein.di.DI
+import org.kodein.di.DIAware
 
-class MyNotesSystem : Application() {
+class MyNotesSystem : Application(), DIAware{
     override fun onCreate() {
         super.onCreate()
         log("Initializing database")
         Database.initializeDatabase(applicationContext)
     }
+    override val di = DI.lazy {
+        import(PaperModule())
+        import(DataModule())
+    }
 
     companion object{
-        fun initSystem() : Promise<Boolean>{
+        fun initSystem() : Promise<Boolean> {
             val ret = Promise<Boolean>()
             Database.loadState().onComplete { returnedPair ->
                 masterBook = returnedPair.second
@@ -23,7 +32,7 @@ class MyNotesSystem : Application() {
 
         private lateinit var masterBook : MasterBook
 
-        fun accessMasterBook() : MasterBook{
+        fun accessMasterBook() : MasterBook {
             return if(this::masterBook.isInitialized) masterBook
             else {
                 log("Master book not initialized, returning a bad Master Book")
@@ -44,8 +53,10 @@ class MyNotesSystem : Application() {
             return BAD_NOTE
         }
 
-        fun toggleLock(itemId : Int, password : Int) : Promise<Boolean>{
-            val item : Any = getItemById(itemId) as Lockable
+        fun toggleLock(itemId : Int, password : Int) : Promise<Boolean> {
+            val item : Any = getItemById(
+                itemId
+            ) as Lockable
             val ret = Promise<Boolean>()
             if(item is Lockable){
                 if(item.isLocked && (password == item.password)) {
@@ -65,21 +76,25 @@ class MyNotesSystem : Application() {
         }
 
         // Pair<Int, Boolean> => Pair(upperPlaceId, success)
-        fun deleteItem(itemId: Int) : Promise<Pair<Int, Boolean>>{
-            val ret = Promise<Pair<Int,Boolean>>()
+        fun deleteItem(itemId: Int) : Promise<Pair<Int, Boolean>> {
+            val ret = Promise<Pair<Int, Boolean>>()
 
-            when(val item = getItemById(itemId)){
+            when(val item =
+                getItemById(itemId)){
                 is Book -> {
                     accessMasterBook().bookList.remove(item)
-                    Database.saveState().onComplete { success -> ret.complete(Pair(MASTER_BOOK_ID , success)) }
+                    Database.saveState().onComplete { success -> ret.complete(Pair(
+                        MASTER_BOOK_ID, success)) }
                 }
                 is Note -> {
-                    val owner = getItemById(item.ownerId) as Book
+                    val owner = getItemById(
+                        item.ownerId
+                    ) as Book
                     owner.noteList.remove(item)
                     Database.saveState().onComplete { success -> ret.complete(Pair(owner.id , success)) }
                 }
                 else -> {
-                    ret.complete(Pair(MASTER_BOOK_ID , false))
+                    ret.complete(Pair(MASTER_BOOK_ID, false))
                     log("Something went wrong")
                 }
             }
@@ -94,7 +109,9 @@ class MyNotesSystem : Application() {
                     accessMasterBook().highestId++
 
                     if(product.ownerId == masterBook.id) masterBook.noteList.add(product)
-                    else { (getItemById(product.ownerId) as Book).noteList.add(product) }
+                    else { (getItemById(
+                        product.ownerId
+                    ) as Book).noteList.add(product) }
 
                     Database.saveState().onComplete { success ->
                         if(success) log("Finished creating note successfully")
