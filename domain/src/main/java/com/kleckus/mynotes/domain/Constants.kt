@@ -5,7 +5,8 @@ import com.kleckus.mynotes.domain.models.Note
 
 object Constants {
     // Internal constants
-    private const val NO_PASSWORD = -2
+    private const val NO_PASSWORD = -1
+    private const val MASTER_BOOK_TITLE = "Master Book"
     private const val BAD_ID = "invalid-book-or-note-id"
     private const val BAD_TITLE = "Error instance"
     private const val BAD_NOTE_CONTENT = "This is a note that appears when something wrong occurs"
@@ -27,6 +28,14 @@ object Constants {
         isLocked = false,
         password = NO_PASSWORD,
         title = BAD_TITLE,
-        noteList = mutableListOf()
+        noteIds = mutableListOf()
+    )
+
+    val INITIAL_BOOK = Book(
+        id = MASTER_BOOK_ID,
+        isLocked = false,
+        password = NO_PASSWORD,
+        title = MASTER_BOOK_TITLE,
+        noteIds = mutableListOf()
     )
 }

@@ -18,8 +18,6 @@ class StorageImplementation(
         cache.save(item)
     }
 
-
-
     override suspend fun delete(id: String) {
         cache.delete(id)
     }
@@ -27,9 +25,4 @@ class StorageImplementation(
     override suspend fun load(id: String): Any =
         cache.load(id)
 
-    override suspend fun loadBook(id: String): Book =
-        cache.loadBook(id)
-
-    override suspend fun loadNote(id: String): Note =
-        cache.loadNote(id)
 }

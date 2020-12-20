@@ -16,11 +16,8 @@ class MasterBookViewModel(private val service : Storage) : ViewModel() {
     fun save(item : Any) : Flow<DalekEvent<Unit>> =
         Dalek{ service.save(item) }
 
-    fun getBookById(id : String) : Flow<DalekEvent<Book>> =
-        Dalek{ service.loadBook(id) }
-
-    fun getNoteById(id : String) : Flow<DalekEvent<Note>> =
-        Dalek{ service.loadNote(id) }
+    fun getItemById(id: String) : Flow<DalekEvent<Any>> =
+        Dalek{ service.load(id) }
 
     fun deleteById(id : String) : Flow<DalekEvent<Unit>> =
         Dalek{ service.delete(id) }

@@ -6,6 +6,7 @@ import com.kleckus.mynotes.database.Database
 import com.kleckus.mynotes.paper_database.di.PaperModule
 import com.kleckus.mynotes.system.*
 import com.kleckus.mynotes.system.Util.Companion.log
+import com.kleckus.mynotes.ui.di.UIModule
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 
@@ -18,6 +19,7 @@ class MyNotesSystem : Application(), DIAware{
     override val di = DI.lazy {
         import(PaperModule())
         import(DataModule())
+        import(UIModule())
     }
 
     companion object{

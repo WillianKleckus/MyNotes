@@ -34,25 +34,20 @@ class MasterActivity : AppCompatActivity(), DIAware {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.master_activity)
         mainRecyclerView.adapter = adapter
-        goToBook(MASTER_BOOK_ID)
+        goTo(MASTER_BOOK_ID)
     }
 
-    private fun goToBook(id : String, scope : CoroutineScope = ioScope){
-        viewModel.getBookById(MASTER_BOOK_ID).collectIn(scope){ event ->
+    private fun goTo(id : String, scope : CoroutineScope = ioScope){
+        viewModel.getItemById(id).collectIn(scope){ event ->
             when(event){
                 is Start -> setLoading(true)
-                is Success -> setBookView(event.value)
-                is Failure -> handleError(event.exception)
-                is Finish -> setLoading(false)
-            }
-        }
-    }
-
-    private fun goToNote(id : String, scope : CoroutineScope = ioScope){
-        viewModel.getNoteById(MASTER_BOOK_ID).collectIn(scope){ event ->
-            when(event){
-                is Start -> setLoading(true)
-                is Success -> setNoteView(event.value)
+                is Success -> {
+                    when(val item = event.value){
+                        is Book -> setBookView(item)
+                        is Note -> setNoteView(item)
+                        else -> throw MyNotesErrors.NonNoteOrBookArgument
+                    }
+                }
                 is Failure -> handleError(event.exception)
                 is Finish -> setLoading(false)
             }
@@ -89,10 +84,10 @@ class MasterActivity : AppCompatActivity(), DIAware {
         noteView.isGone = true
 
         if(!isMasterBook){
-            backButton.setOnClickListener { goToBook(MASTER_BOOK_ID) }
+            backButton.setOnClickListener { goTo(MASTER_BOOK_ID) }
             deleteButton.setOnClickListener {
                 delete(book.id)
-                goToBook(MASTER_BOOK_ID)
+                goTo(MASTER_BOOK_ID)
             }
         }
 
@@ -106,17 +101,17 @@ class MasterActivity : AppCompatActivity(), DIAware {
         bookView.isGone = true
         noteView.isVisible = true
 
-        backButton.setOnClickListener { goToBook(note.ownerId) }
+        backButton.setOnClickListener { goTo(note.ownerId) }
         deleteButton.setOnClickListener {
             delete(note.id)
-            goToBook(note.ownerId)
+            goTo(note.ownerId)
         }
 
         titleTV.text = note.title
         textInput.setText(note.content)
         doneButton.setOnClickListener {
             save(note)
-            goToBook(MASTER_BOOK_ID)
+            goTo(MASTER_BOOK_ID)
         }
     }
 

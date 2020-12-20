@@ -8,8 +8,8 @@ class PaperImplementation : PaperDatabase {
         Paper.book().write(key,item)
     }
 
-    override suspend fun load(key: String): Any =
-        Paper.book().read<Any>(key)
+    override suspend fun load(key: String, default : Any): Any =
+        Paper.book().read<Any>(key, default)
 
     override suspend fun delete(key: String) {
         Paper.book().delete(key)

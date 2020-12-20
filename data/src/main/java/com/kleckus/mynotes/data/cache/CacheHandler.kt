@@ -1,5 +1,6 @@
 package com.kleckus.mynotes.data.cache
 
+import com.kleckus.mynotes.domain.Constants
 import com.kleckus.mynotes.domain.MyNotesErrors
 import com.kleckus.mynotes.domain.models.Book
 import com.kleckus.mynotes.domain.models.Note
@@ -15,15 +16,9 @@ class CacheHandler(private val database : PaperDatabase){
     }
 
     suspend fun load(id : String) : Any =
-        database.load(id)
+        database.load(id, Constants.INITIAL_BOOK)
 
     suspend fun delete(id: String){
         database.delete(id)
     }
-
-    suspend fun loadBook(id: String): Book =
-        database.load(id) as Book
-
-    suspend fun loadNote(id: String): Note =
-        database.load(id) as Note
 }
