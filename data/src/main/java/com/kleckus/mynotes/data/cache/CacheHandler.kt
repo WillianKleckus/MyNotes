@@ -14,6 +14,9 @@ class CacheHandler(private val database : PaperDatabase){
         }
     }
 
+    suspend fun load(id : String) : Any =
+        database.load(id)
+
     suspend fun delete(id: String){
         database.delete(id)
     }

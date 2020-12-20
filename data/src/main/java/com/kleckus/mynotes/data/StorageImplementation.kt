@@ -18,9 +18,14 @@ class StorageImplementation(
         cache.save(item)
     }
 
+
+
     override suspend fun delete(id: String) {
         cache.delete(id)
     }
+
+    override suspend fun load(id: String): Any =
+        cache.load(id)
 
     override suspend fun loadBook(id: String): Book =
         cache.loadBook(id)

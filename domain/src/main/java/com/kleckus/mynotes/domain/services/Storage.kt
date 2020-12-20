@@ -6,6 +6,7 @@ import com.kleckus.mynotes.domain.models.Note
 interface Storage {
     suspend fun save(item : Any)
     suspend fun delete(id : String)
+    suspend fun load(id: String) : Any
     suspend fun loadBook(id: String) : Book
     suspend fun loadNote(id: String) : Note
 

@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.Flow
 
 class MasterBookViewModel(private val service : Storage) : ViewModel() {
 
+    fun getItemsFromIds(idList : List<String>) : Flow<DalekEvent<List<Any>>> =
+        Dalek{ getItemListById(idList) }
+
     fun save(item : Any) : Flow<DalekEvent<Unit>> =
         Dalek{ service.save(item) }
 
@@ -21,4 +24,10 @@ class MasterBookViewModel(private val service : Storage) : ViewModel() {
 
     fun deleteById(id : String) : Flow<DalekEvent<Unit>> =
         Dalek{ service.delete(id) }
+
+    private suspend fun getItemListById(idList : List<String>) : List<Any> =
+        idList.map {
+            service.load(it)
+        }
+
 }

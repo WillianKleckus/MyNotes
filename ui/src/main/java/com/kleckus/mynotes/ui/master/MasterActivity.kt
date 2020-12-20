@@ -6,10 +6,15 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import cafe.adriel.dalek.*
 import com.kleckus.mynotes.domain.Constants.MASTER_BOOK_ID
+import com.kleckus.mynotes.domain.MyNotesErrors
 import com.kleckus.mynotes.domain.models.Book
 import com.kleckus.mynotes.domain.models.Note
 import com.kleckus.mynotes.ui.R
-import kotlinx.android.synthetic.main.activity_master.*
+import com.kleckus.mynotes.ui.adapters.BookItem
+import com.kleckus.mynotes.ui.adapters.NoteItem
+import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.GroupieViewHolder
+import kotlinx.android.synthetic.main.master_activity.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.kodein.di.DI
@@ -22,11 +27,14 @@ class MasterActivity : AppCompatActivity(), DIAware {
     override val di: DI by closestDI()
     private val viewModel by instance<MasterBookViewModel>()
 
+    private val adapter = GroupAdapter<GroupieViewHolder>()
     private val ioScope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_master)
+        setContentView(R.layout.master_activity)
+        mainRecyclerView.adapter = adapter
+        goToBook(MASTER_BOOK_ID)
     }
 
     private fun goToBook(id : String, scope : CoroutineScope = ioScope){
@@ -113,7 +121,23 @@ class MasterActivity : AppCompatActivity(), DIAware {
     }
 
     private fun setBookAdapter(idList : List<String>){
-
+        viewModel.getItemsFromIds(idList).collectIn(ioScope){ event ->
+            when(event){
+                is Start -> setLoading(true)
+                is Success -> {
+                    val result = event.value
+                    result.forEach {
+                        when(it){
+                            is Book -> adapter.add(BookItem(it){ setBookView(it)})
+                            is Note -> adapter.add(NoteItem(it, ::setNoteView))
+                            else -> throw MyNotesErrors.NonNoteOrBookArgument
+                        }
+                    }
+                }
+                is Failure -> handleError(event.exception)
+                is Finish -> setLoading(false)
+            }
+        }
     }
 
     private fun setLoading(isLoading : Boolean){
