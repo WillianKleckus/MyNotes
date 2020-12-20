@@ -121,10 +121,10 @@ class MasterActivity : AppCompatActivity(), DIAware {
                 is Start -> setLoading(true)
                 is Success -> {
                     val result = event.value
-                    result.forEach {
-                        when(it){
-                            is Book -> adapter.add(BookItem(it){ setBookView(it)})
-                            is Note -> adapter.add(NoteItem(it, ::setNoteView))
+                    result.forEach { item ->
+                        when(item){
+                            is Book -> adapter.add(BookItem(item){ setBookView(item)})
+                            is Note -> adapter.add(NoteItem(item, ::setNoteView))
                             else -> throw MyNotesErrors.NonNoteOrBookArgument
                         }
                     }
