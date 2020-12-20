@@ -9,6 +9,7 @@ import com.kleckus.mynotes.domain.Constants.MASTER_BOOK_ID
 import com.kleckus.mynotes.domain.MyNotesErrors
 import com.kleckus.mynotes.domain.models.Book
 import com.kleckus.mynotes.domain.models.Note
+import com.kleckus.mynotes.domain.services.Logger
 import com.kleckus.mynotes.ui.R
 import com.kleckus.mynotes.ui.adapters.BookItem
 import com.kleckus.mynotes.ui.adapters.NoteItem
@@ -26,6 +27,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
 
     override val di: DI by closestDI()
     private val viewModel by instance<MasterBookViewModel>()
+    private val logger by instance<Logger>()
 
     private val adapter = GroupAdapter<GroupieViewHolder>()
     private val ioScope = CoroutineScope(Dispatchers.IO)
@@ -48,7 +50,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
                         else -> throw MyNotesErrors.NonNoteOrBookArgument
                     }
                 }
-                is Failure -> handleError(event.exception)
+                is Failure -> handleError("Error on goTo()", event.exception)
                 is Finish -> setLoading(false)
             }
         }
@@ -58,8 +60,8 @@ class MasterActivity : AppCompatActivity(), DIAware {
         viewModel.save(item).collectIn(scope){ event ->
             when(event){
                 is Start -> setLoading(true)
-                is Success -> { print("Saved successfully") }
-                is Failure -> handleError(event.exception)
+                is Success -> logger.log("Saved successfully: ${item.toString()}")
+                is Failure -> handleError("Error on save()", event.exception)
                 is Finish -> setLoading(false)
             }
         }
@@ -69,8 +71,8 @@ class MasterActivity : AppCompatActivity(), DIAware {
         viewModel.deleteById(id).collectIn(scope){ event ->
             when(event){
                 is Start -> setLoading(true)
-                is Success -> { print("Deleted successfully") }
-                is Failure -> handleError(event.exception)
+                is Success -> logger.log("Deleted successfully from id: $id")
+                is Failure -> handleError("Error on deleted()", event.exception)
                 is Finish -> setLoading(false)
             }
         }
@@ -84,11 +86,14 @@ class MasterActivity : AppCompatActivity(), DIAware {
         noteView.isGone = true
 
         if(!isMasterBook){
+            addButton.setOnClickListener(null)
             backButton.setOnClickListener { goTo(MASTER_BOOK_ID) }
             deleteButton.setOnClickListener {
                 delete(book.id)
                 goTo(MASTER_BOOK_ID)
             }
+        } else{
+            addButton.setOnClickListener {  }
         }
 
         titleTV.text = book.title
@@ -129,17 +134,21 @@ class MasterActivity : AppCompatActivity(), DIAware {
                         }
                     }
                 }
-                is Failure -> handleError(event.exception)
+                is Failure -> handleError("Error on getItemsFromIds()", event.exception)
                 is Finish -> setLoading(false)
             }
         }
+    }
+
+    private fun createNoteOrBook(ownerId : String){
+
     }
 
     private fun setLoading(isLoading : Boolean){
 
     }
 
-    private fun handleError(e : Throwable){
-
+    private fun handleError(message: String, e : Throwable){
+        logger.log(message, e)
     }
 }
