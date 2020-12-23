@@ -3,13 +3,15 @@ package com.kleckus.mynotes.ui.adapters
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import com.kleckus.mynotes.domain.models.Book
 import com.kleckus.mynotes.ui.R
+import com.kleckus.mynotes.ui.dialogs.LockItemDialog
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.note_or_book_item_layout.view.*
 
 class BookItem(
     private val book : Book,
-    private val onBookClicked : (book : Book) -> Unit
+    private val onBookClicked : (book: Book) -> Unit,
+    private val onBookLocked : (book: Book, password : String?) -> Unit
 ) : Item<GroupieViewHolder>() {
     private companion object{
         const val BOOK_TYPE = "Book"
@@ -29,6 +31,9 @@ class BookItem(
                 boolLockIcon.setImageDrawable(getDrawable(context, R.drawable.unlocked_icon))
             }
 
+            boolLockIcon.setOnClickListener {
+                // TODO - lock book
+            }
             setOnClickListener { onBookClicked(book) }
         }
     }

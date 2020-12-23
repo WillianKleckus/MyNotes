@@ -144,8 +144,8 @@ class MasterActivity : AppCompatActivity(), DIAware {
                     logger.log(result.toString())
                     result.forEach { item ->
                         when(item){
-                            is Book -> adapter.add(BookItem(item){ setBookView(item)})
-                            is Note -> adapter.add(NoteItem(item, ::setNoteView))
+                            is Book -> adapter.add(BookItem(item, {setBookView(item)} , ::toggleLock))
+                            is Note -> adapter.add(NoteItem(item, ::setNoteView, ::toggleLock))
                             else -> throw MyNotesErrors.NonNoteOrBookArgument
                         }
                     }
@@ -154,6 +154,16 @@ class MasterActivity : AppCompatActivity(), DIAware {
                 is Finish -> setLoading(false)
             }
         }
+    }
+
+    private fun <T> toggleLock(item : T, password : String? = null){
+        val ownerId : String
+        when(item){
+            is Book -> item.toggleLock(password).also { ownerId = MASTER_BOOK_ID }
+            is Note -> item.toggleLock(password).also { ownerId = item.ownerId }
+            else -> throw MyNotesErrors.NonNoteOrBookArgument
+        }
+        save(ownerId, item)
     }
 
     private fun createNoteOrBook(ownerId : String){

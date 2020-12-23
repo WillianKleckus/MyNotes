@@ -9,7 +9,8 @@ import kotlinx.android.synthetic.main.note_or_book_item_layout.view.*
 
 class NoteItem(
     private val note : Note,
-    private val onNoteClicked : (note : Note) -> Unit
+    private val onNoteClicked : (note: Note) -> Unit,
+    private val onNoteLocked : (note: Note, password : String?) -> Unit
 ) : Item<GroupieViewHolder>() {
     private companion object{
         const val NOTE_TYPE = "Note"

@@ -34,4 +34,7 @@ class MasterBookViewModel(
 
     private suspend fun getItemListById(idList : List<String>) : List<Any> =
         idList.map { service.load(it) }
+
+    fun toggleLock(id : String, password : String?) : Flow<DalekEvent<Unit>> =
+        Dalek{  }
 }
