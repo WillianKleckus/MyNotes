@@ -93,7 +93,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
             when(event){
                 is Start -> setLoading(true)
                 is Success -> andThen(event.value)
-                is Failure -> handleError("Error on deleted()", event.exception)
+                is Failure -> handleError("Error on nextAvailableId()", event.exception)
                 is Finish -> setLoading(false)
             }
         }
@@ -124,7 +124,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
                         }
                     }
                 }
-                is Failure -> handleError("Error on getItemsFromIds()", event.exception)
+                is Failure -> handleError("Error on setBookAdapter()", event.exception)
                 is Finish -> setLoading(false)
             }
         }
