@@ -1,0 +1,18 @@
+plugins {
+    id 'kotlin'
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    // Kodein DI
+    implementation 'org.kodein.di:kodein-di:7.1.0'
+
+    implementation project(":domain")
+}
