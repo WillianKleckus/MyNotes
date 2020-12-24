@@ -16,6 +16,7 @@ import com.kleckus.mynotes.domain.services.Logger
 import com.kleckus.mynotes.ui.R
 import com.kleckus.mynotes.ui.adapters.BookItem
 import com.kleckus.mynotes.ui.adapters.NoteItem
+import com.kleckus.mynotes.ui.dialogs.ConfirmationDialog
 import com.kleckus.mynotes.ui.dialogs.CreationType
 import com.kleckus.mynotes.ui.dialogs.CreationType.BOOK
 import com.kleckus.mynotes.ui.dialogs.CreationType.NOTE
@@ -74,13 +75,16 @@ class MasterActivity : AppCompatActivity(), DIAware {
     }
 
     private fun delete(ownerId: String = MASTER_BOOK_ID, id : String, scope : CoroutineScope = mainScope){
-        viewModel.deleteById(id).collectIn(scope){ event ->
-            when(event){
-                is Start -> setLoading(true)
-                is Success -> goTo(ownerId)
-                is Failure -> handleError("Error on deleted()", event.exception)
-                is Finish -> setLoading(false)
-            }
+        ConfirmationDialog.openDialog(this){ confirmed ->
+            if(confirmed)
+                viewModel.deleteById(id).collectIn(scope){ event ->
+                    when(event){
+                        is Start -> setLoading(true)
+                        is Success -> goTo(ownerId)
+                        is Failure -> handleError("Error on deleted()", event.exception)
+                        is Finish -> setLoading(false)
+                    }
+                }
         }
     }
 
@@ -162,10 +166,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
         noteView.isVisible = true
 
         backButton.setOnClickListener { goTo(note.ownerId) }
-        deleteButton.setOnClickListener {
-            delete(id = note.id)
-            goTo(note.ownerId)
-        }
+        deleteButton.setOnClickListener { delete(id = note.id) }
 
         titleTV.text = note.title
         textInput.setText(note.content)
