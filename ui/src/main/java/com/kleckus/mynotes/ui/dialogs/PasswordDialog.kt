@@ -4,44 +4,55 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isGone
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kleckus.mynotes.ui.R
-import com.kleckus.mynotes.ui.dialogs.LockItemDialog.ErrorMessages.PASSWORDS_DONT_MATCH
-import com.kleckus.mynotes.ui.dialogs.LockItemDialog.Validation.*
+import com.kleckus.mynotes.ui.dialogs.PasswordDialog.ErrorMessages.PASSWORDS_DONT_MATCH
+import com.kleckus.mynotes.ui.dialogs.PasswordDialog.Validation.*
 import kotlinx.android.synthetic.main.locking_dialog_layout.view.*
 
-object LockItemDialog {
+object PasswordDialog {
     object ErrorMessages{
         const val PASSWORDS_DONT_MATCH = "Passwords don't match"
     }
 
     fun openDialog(
         id : String,
-        lock : (id : String, password : String) -> Unit,
-        context : Context
+        isLocking : Boolean,
+        context : Context,
+        onFinish : (id : String, password : String) -> Unit
     ){
         val view = getView(context)
         val dialog = MaterialAlertDialogBuilder(context)
             .setView(view)
             .show()
-        view.setupView(id, dialog, lock)
+        view.setupView(id, onFinish, isLocking, dialog)
     }
 
     private fun View.setupView(
         id: String,
-        dialog: AlertDialog,
-        lock : (id : String, password : String) -> Unit
+        lock : (id : String, password : String) -> Unit,
+        isLocking : Boolean,
+        dialog: AlertDialog
     ) {
+        confirmationPasswordView.isGone = !isLocking
+        warningOrErrorMessage.isGone = !isLocking
+
         doneButton.setOnClickListener {
             val password = passwordField.text.toString()
             val passwordConfirmation = confirmationPasswordField.text.toString()
 
-            when(val result = validate(password, passwordConfirmation)){
-                is Valid -> {
-                    lock(id, password)
-                    dialog.dismiss()
+            if(isLocking){
+                when(val result = validate(password, passwordConfirmation)){
+                    is Valid -> {
+                        lock(id, password)
+                        dialog.dismiss()
+                    }
+                    is Invalid -> warningOrErrorMessage.text = result.message
                 }
-                is Invalid -> warningOrErrorMessage.text = result.message
+            } else{
+                lock(id, password)
+                dialog.dismiss()
             }
         }
     }

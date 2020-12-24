@@ -1,15 +1,14 @@
 package com.kleckus.mynotes.domain.models
 
-class Book(val id : String, var isLocked : Boolean, var password : String, var title : String, var noteIds : List<String>){
-    fun numberOfNotes() : Int = noteIds.size
+import com.kleckus.mynotes.domain.Constants.MASTER_BOOK_ID
 
-    fun toggleLock(newPassword: String?){
-        newPassword?.let {
-            isLocked = true
-            password = newPassword
-        } ?: run{
-            isLocked = false
-            password = ""
-        }
-    }
+class Book(
+    id : String,
+    ownerId : String = MASTER_BOOK_ID,
+    isLocked : Boolean,
+    password : String,
+    var title : String,
+    var noteIds : List<String>
+) : Item(id, ownerId, isLocked, password){
+    fun numberOfNotes() : Int = noteIds.size
 }

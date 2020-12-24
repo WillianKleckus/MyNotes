@@ -12,12 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/password_string"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:endIconMode="password_toggle"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/passwordField"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="numberPassword"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -27,12 +30,15 @@
         android:layout_height="wrap_content"
         android:hint="@string/confirm_password_string"
         android:layout_marginTop="@dimen/small_dips"
-        app:layout_constraintTop_toBottomOf="@+id/passwordView">
+        app:layout_constraintTop_toBottomOf="@+id/passwordView"
+        app:endIconMode="password_toggle"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/confirmationPasswordField"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="numberPassword"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 

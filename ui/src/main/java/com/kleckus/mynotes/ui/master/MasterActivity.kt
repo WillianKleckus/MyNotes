@@ -2,6 +2,7 @@ package com.kleckus.mynotes.ui.master
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import cafe.adriel.dalek.*
@@ -9,6 +10,7 @@ import com.kleckus.mynotes.domain.Constants.MASTER_BOOK_ID
 import com.kleckus.mynotes.domain.Constants.NO_PASSWORD
 import com.kleckus.mynotes.domain.MyNotesErrors
 import com.kleckus.mynotes.domain.models.Book
+import com.kleckus.mynotes.domain.models.Item
 import com.kleckus.mynotes.domain.models.Note
 import com.kleckus.mynotes.domain.services.Logger
 import com.kleckus.mynotes.ui.R
@@ -18,6 +20,7 @@ import com.kleckus.mynotes.ui.dialogs.CreationType
 import com.kleckus.mynotes.ui.dialogs.CreationType.BOOK
 import com.kleckus.mynotes.ui.dialogs.CreationType.NOTE
 import com.kleckus.mynotes.ui.dialogs.NoteOrBookCreationDialog
+import com.kleckus.mynotes.ui.dialogs.PasswordDialog
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.master_activity.*
@@ -44,24 +47,22 @@ class MasterActivity : AppCompatActivity(), DIAware {
         goTo(MASTER_BOOK_ID)
     }
 
-    private fun goTo(id : String, scope : CoroutineScope = mainScope){
+    private inline fun <reified T> load(
+        id : String,
+        scope : CoroutineScope = mainScope,
+        crossinline andThen: (item: T) -> Unit
+    ){
         viewModel.getItemById(id).collectIn(scope){ event ->
             when(event){
                 is Start -> setLoading(true)
-                is Success -> {
-                    when(val item = event.value){
-                        is Book -> setBookView(item)
-                        is Note -> setNoteView(item)
-                        else -> throw MyNotesErrors.NonNoteOrBookArgument
-                    }
-                }
-                is Failure -> handleError("Error on goTo()", event.exception)
+                is Success -> andThen(event.value as T)
+                is Failure -> handleError("Error on load()", event.exception)
                 is Finish -> setLoading(false)
             }
         }
     }
 
-    private fun save(ownerId: String = MASTER_BOOK_ID, item : Any, scope : CoroutineScope = mainScope){
+    private fun save(ownerId: String = MASTER_BOOK_ID, item : Item, scope : CoroutineScope = mainScope){
         viewModel.save(item).collectIn(scope){ event ->
             when(event){
                 is Start -> setLoading(true)
@@ -94,7 +95,47 @@ class MasterActivity : AppCompatActivity(), DIAware {
         }
     }
 
-    private fun setBookView(book : Book, scope : CoroutineScope = mainScope){
+    private fun goTo(id : String){
+        load<Item>(id){ item ->
+            when(item){
+                is Book -> setBookView(item)
+                is Note -> setNoteView(item)
+            }
+        }
+    }
+
+    private fun setBookAdapter(idList : List<String>){
+        adapter.clear()
+        viewModel.getItemsFromIds(idList).collectIn(mainScope){ event ->
+            when(event){
+                is Start -> setLoading(true)
+                is Success -> {
+                    val result = event.value
+                    logger.log(result.toString())
+                    result.forEach { item ->
+                        when(item){
+                            is Book -> adapter.add(BookItem(item, ::onItemClicked, ::toggleLock))
+                            is Note -> adapter.add(NoteItem(item, ::onItemClicked, ::toggleLock))
+                            else -> throw MyNotesErrors.InvalidArgumentType
+                        }
+                    }
+                }
+                is Failure -> handleError("Error on getItemsFromIds()", event.exception)
+                is Finish -> setLoading(false)
+            }
+        }
+    }
+
+    private fun onItemClicked(item : Item){
+        if(item.isLocked){
+            PasswordDialog.openDialog(item.id, false, this){ _, password ->
+                if(password == item.password) goTo(item.id)
+                else showError(MyNotesErrors.InvalidPassword)
+            }
+        } else goTo(item.id)
+    }
+
+    private fun setBookView(book : Book){
         val isMasterBook = book.id == MASTER_BOOK_ID
         optionsLayout.isGone = isMasterBook
 
@@ -134,36 +175,18 @@ class MasterActivity : AppCompatActivity(), DIAware {
         }
     }
 
-    private fun setBookAdapter(idList : List<String>){
-        adapter.clear()
-        viewModel.getItemsFromIds(idList).collectIn(mainScope){ event ->
-            when(event){
-                is Start -> setLoading(true)
-                is Success -> {
-                    val result = event.value
-                    logger.log(result.toString())
-                    result.forEach { item ->
-                        when(item){
-                            is Book -> adapter.add(BookItem(item, {setBookView(item)} , ::toggleLock))
-                            is Note -> adapter.add(NoteItem(item, ::setNoteView, ::toggleLock))
-                            else -> throw MyNotesErrors.NonNoteOrBookArgument
-                        }
-                    }
+    private fun toggleLock(id : String, password : String){
+        load<Item>(id){ item ->
+            if(item.isLocked){
+                if(password == item.password){
+                    item.toggleLock()
+                    save(item.ownerId, item)
                 }
-                is Failure -> handleError("Error on getItemsFromIds()", event.exception)
-                is Finish -> setLoading(false)
+            } else{
+                item.toggleLock(password)
+                save(item.ownerId, item)
             }
         }
-    }
-
-    private fun <T> toggleLock(item : T, password : String? = null){
-        val ownerId : String
-        when(item){
-            is Book -> item.toggleLock(password).also { ownerId = MASTER_BOOK_ID }
-            is Note -> item.toggleLock(password).also { ownerId = item.ownerId }
-            else -> throw MyNotesErrors.NonNoteOrBookArgument
-        }
-        save(ownerId, item)
     }
 
     private fun createNoteOrBook(ownerId : String){
@@ -200,6 +223,10 @@ class MasterActivity : AppCompatActivity(), DIAware {
 
     private fun setLoading(isLoading : Boolean){
         loadingView.isGone = !isLoading
+    }
+
+    private fun showError(error : Throwable){
+        Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show()
     }
 
     private fun handleError(message: String, e : Throwable){

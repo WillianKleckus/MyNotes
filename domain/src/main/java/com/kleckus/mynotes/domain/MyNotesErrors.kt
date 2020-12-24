@@ -4,10 +4,12 @@ import java.lang.IllegalArgumentException
 
 sealed class MyNotesErrors {
     private companion object{
-        const val BOOK_OR_NOTE_MESSAGE = "Argument must be a book or a note"
+        const val INVALID_TYPE = "Invalid type as argument (Must be inherited from Item type)"
         const val INVALID_OWNER_TYPE_MESSAGE = "Only books can be owners"
+        const val BAD_PASSWORD = "Wrong password"
     }
 
-    object NonNoteOrBookArgument : IllegalArgumentException(BOOK_OR_NOTE_MESSAGE)
+    object InvalidArgumentType : IllegalArgumentException(INVALID_TYPE)
     object InvalidOwnerType : IllegalArgumentException(INVALID_OWNER_TYPE_MESSAGE)
+    object InvalidPassword : IllegalAccessError(BAD_PASSWORD)
 }
