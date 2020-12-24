@@ -14,5 +14,6 @@ dependencies {
     // Kodein DI
     implementation 'org.kodein.di:kodein-di:7.1.0'
 
+    // Project
     implementation project(":domain")
 }

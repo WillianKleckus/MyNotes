@@ -76,6 +76,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
 
     private fun delete(ownerId: String = MASTER_BOOK_ID, id : String, scope : CoroutineScope = mainScope){
         ConfirmationDialog.openDialog(this){ confirmed ->
+            logger.log("item-deleted")
             if(confirmed)
                 viewModel.deleteById(id).collectIn(scope){ event ->
                     when(event){
@@ -206,6 +207,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
                         noteIds = mutableListOf()
                     )
                     save(item = book)
+                    logger.log("book-created")
                 }
                 NOTE -> {
                     val note = Note(
@@ -217,6 +219,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
                         content = ""
                     )
                     save(note.ownerId, note)
+                    logger.log("note-created")
                 }
             }
         }
