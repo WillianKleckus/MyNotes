@@ -1,3 +1,4 @@
+include ':modular-notes'
 include ':ui'
 include ':domain'
 include ':data'
