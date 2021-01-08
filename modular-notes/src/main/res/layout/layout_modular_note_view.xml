@@ -11,7 +11,7 @@
         android:layout_width="@dimen/add_button_size"
         android:layout_height="@dimen/add_button_size"
         android:src="@drawable/ic_add_circle"
-        app:tint="@color/add_button_color"
+        android:tint="@color/add_button_color"
         android:layout_marginTop="@dimen/smallest_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

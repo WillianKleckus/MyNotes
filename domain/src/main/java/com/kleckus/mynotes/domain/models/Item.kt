@@ -1,8 +1,6 @@
 package com.kleckus.mynotes.domain.models
 
-open class Item(val id : String, val ownerId : String, var isLocked : Boolean, var password : String? = null){
-    fun toggleLock(newPassword: String? = null){
-        password = newPassword
-        isLocked = !newPassword.isNullOrBlank()
-    }
+sealed class Item{
+    data class Text(var content : String) : Item()
+    data class CheckList(var checkListItems : List<CheckListItem>) : Item()
 }
