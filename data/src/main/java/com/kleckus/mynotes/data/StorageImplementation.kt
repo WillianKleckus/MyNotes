@@ -2,9 +2,7 @@ package com.kleckus.mynotes.data
 
 import com.kleckus.mynotes.data.cache.CacheHandler
 import com.kleckus.mynotes.data.cloud.CloudHandler
-import com.kleckus.mynotes.domain.models.Book
-import com.kleckus.mynotes.domain.models.Item
-import com.kleckus.mynotes.domain.models.Note
+import com.kleckus.mynotes.domain.models.ModularItem
 import com.kleckus.mynotes.domain.services.Storage
 
 class StorageImplementation(
@@ -20,7 +18,7 @@ class StorageImplementation(
         return "item-$id"
     }
 
-    override suspend fun save(item: Item) {
+    override suspend fun save(item: ModularItem) {
         cache.save(item)
     }
 
@@ -28,7 +26,7 @@ class StorageImplementation(
         cache.delete(id)
     }
 
-    override suspend fun load(id: String): Item =
+    override suspend fun load(id: String): ModularItem =
         cache.load(id)
 
 }

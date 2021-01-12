@@ -6,8 +6,7 @@ import com.kleckus.mynotes.domain.Constants.INITIAL_BOOK
 import com.kleckus.mynotes.domain.Constants.MASTER_BOOK_ID
 import com.kleckus.mynotes.domain.MyNotesErrors
 import com.kleckus.mynotes.domain.models.Book
-import com.kleckus.mynotes.domain.models.Item
-import com.kleckus.mynotes.domain.models.Note
+import com.kleckus.mynotes.domain.models.ModularItem
 import com.kleckus.mynotes.domain.services.Logger
 import com.kleckus.mynotes.domain.services.PaperDatabase
 
@@ -15,7 +14,7 @@ class CacheHandler(
     private val database : PaperDatabase,
     private val logger : Logger
 ){
-    suspend fun save(item : Item){
+    suspend fun save(item : ModularItem){
         when(item){
             is Book -> {
                 alter(MASTER_BOOK_ID, item.id, ADD)
@@ -33,7 +32,7 @@ class CacheHandler(
         database.save(id)
     }
 
-    suspend fun load(id : String) : Item = database.load(id, INITIAL_BOOK)
+    suspend fun load(id : String) : ModularItem = database.load(id, INITIAL_BOOK)
 
     suspend fun load() : Int = database.load()
 

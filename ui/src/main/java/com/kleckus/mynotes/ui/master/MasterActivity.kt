@@ -10,7 +10,7 @@ import com.kleckus.mynotes.domain.Constants.MASTER_BOOK_ID
 import com.kleckus.mynotes.domain.Constants.NO_PASSWORD
 import com.kleckus.mynotes.domain.MyNotesErrors
 import com.kleckus.mynotes.domain.models.Book
-import com.kleckus.mynotes.domain.models.Item
+import com.kleckus.mynotes.domain.models.ModularItem
 import com.kleckus.mynotes.domain.models.Note
 import com.kleckus.mynotes.domain.services.Logger
 import com.kleckus.mynotes.ui.R
@@ -63,7 +63,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
         }
     }
 
-    private fun save(ownerId: String = MASTER_BOOK_ID, item : Item, scope : CoroutineScope = mainScope){
+    private fun save(ownerId: String = MASTER_BOOK_ID, item : ModularItem, scope : CoroutineScope = mainScope){
         viewModel.save(item).collectIn(scope){ event ->
             when(event){
                 is Start -> setLoading(true)
@@ -101,7 +101,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
     }
 
     private fun goTo(id : String){
-        load<Item>(id){ item ->
+        load<ModularItem>(id){ item ->
             when(item){
                 is Book -> setBookView(item)
                 is Note -> setNoteView(item)
@@ -131,7 +131,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
         }
     }
 
-    private fun onItemClicked(item : Item){
+    private fun onItemClicked(item : ModularItem){
         if(item.isLocked){
             PasswordDialog.openDialog(item.id, false, this){ _, password ->
                 if(password == item.password) goTo(item.id)
@@ -178,7 +178,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
     }
 
     private fun toggleLock(id : String, password : String){
-        load<Item>(id){ item ->
+        load<ModularItem>(id){ item ->
             if(item.isLocked){
                 if(password == item.password){
                     item.toggleLock()

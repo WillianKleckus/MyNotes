@@ -1,7 +1,6 @@
 package com.kleckus.mynotes.domain
 
 import com.kleckus.mynotes.domain.models.Book
-import com.kleckus.mynotes.domain.models.Note
 
 object Constants {
     // Internal constants

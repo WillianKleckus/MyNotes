@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- App accent -->
+    <color name="colorPrimary">#F49F3F</color>
+    <color name="colorPrimaryDark">#FBD249</color>
+    <color name="colorAccent">#AED143</color>
+
     <color name="add_button_color">#3E3D37</color>
 
     <!-- Text view -->
