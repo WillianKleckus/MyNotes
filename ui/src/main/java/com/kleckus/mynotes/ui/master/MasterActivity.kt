@@ -9,13 +9,11 @@ import cafe.adriel.dalek.*
 import com.kleckus.mynotes.domain.Constants.MASTER_BOOK_ID
 import com.kleckus.mynotes.domain.Constants.NO_PASSWORD
 import com.kleckus.mynotes.domain.MyNotesErrors
-import com.kleckus.mynotes.domain.models.Book
-import com.kleckus.mynotes.domain.models.ModularItem
-import com.kleckus.mynotes.domain.models.Note
+import com.kleckus.mynotes.domain.models.Item
+import com.kleckus.mynotes.domain.models.Item.*
 import com.kleckus.mynotes.domain.services.Logger
 import com.kleckus.mynotes.ui.R
-import com.kleckus.mynotes.ui.adapters.BookItem
-import com.kleckus.mynotes.ui.adapters.NoteItem
+import com.kleckus.mynotes.ui.adapters.MasterItem
 import com.kleckus.mynotes.ui.dialogs.ConfirmationDialog
 import com.kleckus.mynotes.ui.dialogs.CreationType
 import com.kleckus.mynotes.ui.dialogs.CreationType.BOOK
@@ -48,22 +46,22 @@ class MasterActivity : AppCompatActivity(), DIAware {
         goTo(MASTER_BOOK_ID)
     }
 
-    private inline fun <reified T> load(
+    private fun load(
         id : String,
         scope : CoroutineScope = mainScope,
-        crossinline andThen: (item: T) -> Unit
+        andThen: (item: Item) -> Unit
     ){
         viewModel.getItemById(id).collectIn(scope){ event ->
             when(event){
                 is Start -> setLoading(true)
-                is Success -> andThen(event.value as T)
+                is Success -> andThen(event.value)
                 is Failure -> handleError("Error on load()", event.exception)
                 is Finish -> setLoading(false)
             }
         }
     }
 
-    private fun save(ownerId: String = MASTER_BOOK_ID, item : ModularItem, scope : CoroutineScope = mainScope){
+    private fun save(ownerId: String = MASTER_BOOK_ID, item : Item, scope : CoroutineScope = mainScope){
         viewModel.save(item).collectIn(scope){ event ->
             when(event){
                 is Start -> setLoading(true)
@@ -101,7 +99,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
     }
 
     private fun goTo(id : String){
-        load<ModularItem>(id){ item ->
+        load(id){ item ->
             when(item){
                 is Book -> setBookView(item)
                 is Note -> setNoteView(item)
@@ -115,14 +113,8 @@ class MasterActivity : AppCompatActivity(), DIAware {
             when(event){
                 is Start -> setLoading(true)
                 is Success -> {
-                    val result = event.value
-                    logger.log(result.toString())
-                    result.forEach { item ->
-                        when(item){
-                            is Book -> adapter.add(BookItem(item, ::onItemClicked, ::toggleLock))
-                            is Note -> adapter.add(NoteItem(item, ::onItemClicked, ::toggleLock))
-                            else -> throw MyNotesErrors.InvalidArgumentType
-                        }
+                    event.value.forEach { item ->
+                        adapter.add(MasterItem(item, ::onItemClicked, ::toggleLock))
                     }
                 }
                 is Failure -> handleError("Error on setBookAdapter()", event.exception)
@@ -131,7 +123,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
         }
     }
 
-    private fun onItemClicked(item : ModularItem){
+    private fun onItemClicked(item : Item){
         if(item.isLocked){
             PasswordDialog.openDialog(item.id, false, this){ _, password ->
                 if(password == item.password) goTo(item.id)
@@ -145,7 +137,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
         optionsLayout.isGone = isMasterBook
 
         bookView.isVisible = true
-        noteView.isGone = true
+        modularNoteView.isGone = true
 
         if(!isMasterBook){
             backButton.setOnClickListener { goTo(MASTER_BOOK_ID) }
@@ -164,21 +156,26 @@ class MasterActivity : AppCompatActivity(), DIAware {
         optionsLayout.isVisible = true
 
         bookView.isGone = true
-        noteView.isVisible = true
+        modularNoteView.isVisible = true
+
+        setupToolbar(note)
+        modularNoteView.applyNote(note)
 
         backButton.setOnClickListener { goTo(note.ownerId) }
         deleteButton.setOnClickListener { delete(id = note.id) }
-
         titleTV.text = note.title
-        textInput.setText(note.content)
-        doneButton.setOnClickListener {
-            note.content = textInput.text.toString()
-            save(note.ownerId, note)
-        }
+    }
+
+    private fun setupToolbar(item : Item){
+        optionsLayout.isGone = item.id == MASTER_BOOK_ID
+
+        backButton.setOnClickListener { goTo(item.ownerId) }
+        deleteButton.setOnClickListener { delete(id = item.id) }
+        titleTV.text = item.title
     }
 
     private fun toggleLock(id : String, password : String){
-        load<ModularItem>(id){ item ->
+        load(id){ item ->
             if(item.isLocked){
                 if(password == item.password){
                     item.toggleLock()
@@ -201,6 +198,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
                 BOOK -> {
                     val book = Book(
                         id = id,
+                        ownerId = MASTER_BOOK_ID,
                         isLocked = false,
                         password = NO_PASSWORD,
                         title = title,
@@ -216,7 +214,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
                         isLocked = false,
                         password = NO_PASSWORD,
                         title = title,
-                        content = ""
+                        items = listOf()
                     )
                     save(note.ownerId, note)
                     logger.log("note-created")

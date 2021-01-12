@@ -1,5 +1,6 @@
 package com.kleckus.mynotes.paper_database
 
+import com.kleckus.mynotes.domain.models.Item
 import com.kleckus.mynotes.domain.models.ModularItem
 import com.kleckus.mynotes.domain.services.PaperDatabase
 import io.paperdb.Paper
@@ -10,7 +11,7 @@ class PaperImplementation : PaperDatabase {
         const val DEFAULT_ID = 0
     }
 
-    override suspend fun save(key: String, item: ModularItem) {
+    override suspend fun save(key: String, item: Item) {
         Paper.book().write(key,item)
     }
 
@@ -18,8 +19,8 @@ class PaperImplementation : PaperDatabase {
         Paper.book().write(ID_FIELD,maxId)
     }
 
-    override suspend fun load(key: String, default : ModularItem): ModularItem =
-        Paper.book().read<ModularItem>(key, default)
+    override suspend fun load(key: String, default : Item): Item =
+        Paper.book().read<Item>(key, default)
 
     override suspend fun load(): Int =
         Paper.book().read<Int>(ID_FIELD, DEFAULT_ID)
