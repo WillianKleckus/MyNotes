@@ -1,6 +1,7 @@
-package com.kleckus.mynotes.modular_notes.custom_view
+package com.kleckus.mynotes.modular_notes.custom_view.adapters
 
 import androidx.core.view.isGone
+import com.kleckus.mynotes.domain.models.CheckListItem
 import com.kleckus.mynotes.domain.models.ModularItem
 import com.kleckus.mynotes.domain.models.ModularItem.CheckList
 import com.kleckus.mynotes.domain.models.ModularItem.Text
@@ -21,21 +22,29 @@ class ModularNoteGroupItem(
         viewHolder.itemView.apply {
             when(item){
                 is Text -> {
-                    checkListView.isGone = false
-                    textView.isGone = true
+                    checkListView.isGone = true
+                    textView.isGone = false
 
                     textInput.setText(item.content)
                     textInput.onTextChange { item.content = it }
                 }
                 is CheckList -> {
-                    checkListView.isGone = true
-                    textView.isGone = false
+                    checkListView.isGone = false
+                    textView.isGone = true
 
                     val adapter = GroupAdapter<GroupieViewHolder>()
                     item.checkListItems.forEach { checkItem ->
                         adapter.add(CheckListGroupItem(checkItem))
                     }
                     checkListRecyclerView.adapter = adapter
+
+                    addButton.setOnClickListener {
+                        val checkItem = CheckListItem("Dummy item", false)
+                        val updatedList = item.checkListItems.toMutableList()
+                        updatedList.add(checkItem)
+                        item.checkListItems = updatedList
+                        notifyChanged()
+                    }
                 }
             }
         }

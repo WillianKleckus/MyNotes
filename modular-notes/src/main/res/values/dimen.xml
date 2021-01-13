@@ -6,5 +6,6 @@
 
     <!-- Text view -->
     <dimen name="content_size">20sp</dimen>
+    <dimen name="welcome_size">20sp</dimen>
 
 </resources>

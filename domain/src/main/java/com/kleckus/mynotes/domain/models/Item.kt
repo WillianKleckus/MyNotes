@@ -39,7 +39,7 @@ sealed class Item(
         isLocked: Boolean,
         title : String,
         password: String,
-        val items : List<ModularItem>
+        var items : List<ModularItem>
     ) : Item(id,ownerId,isLocked, title, password){
         fun numberOfNotes() =
             items.filterIsInstance<Text>().size

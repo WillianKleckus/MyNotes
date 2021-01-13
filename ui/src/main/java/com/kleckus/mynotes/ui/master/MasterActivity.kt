@@ -133,26 +133,17 @@ class MasterActivity : AppCompatActivity(), DIAware {
     }
 
     private fun setBookView(book : Book){
-        val isMasterBook = book.id == MASTER_BOOK_ID
-        optionsLayout.isGone = isMasterBook
+        setupToolbar(book)
 
         bookView.isVisible = true
         modularNoteView.isGone = true
 
-        if(!isMasterBook){
-            backButton.setOnClickListener { goTo(MASTER_BOOK_ID) }
-            deleteButton.setOnClickListener { delete(id = book.id) }
-        } else{
-            deleteButton.setOnClickListener(null)
-            backButton.setOnClickListener(null)
-        }
-
         addButton.setOnClickListener { createNoteOrBook(book.id) }
-        titleTV.text = book.title
         setBookAdapter(book.noteIds)
     }
 
     private fun setNoteView(note: Note){
+        setupToolbar(note)
         optionsLayout.isVisible = true
 
         bookView.isGone = true
@@ -160,10 +151,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
 
         setupToolbar(note)
         modularNoteView.applyNote(note)
-
-        backButton.setOnClickListener { goTo(note.ownerId) }
-        deleteButton.setOnClickListener { delete(id = note.id) }
-        titleTV.text = note.title
+        modularNoteView.onDoneClicked { note -> save(note.ownerId, note) }
     }
 
     private fun setupToolbar(item : Item){

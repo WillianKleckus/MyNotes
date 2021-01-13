@@ -4,4 +4,8 @@
     <string name="checklist_title">Checklist</string>
     <string name="checklist_option">Check list option</string>
 
+    <string name="create_welcome_text">Create:</string>
+    <string name="create_text_view">Text</string>
+    <string name="create_check_list">Check List</string>
+
 </resources>
