@@ -2,6 +2,7 @@
 <resources>
 
     <string name="checklist_title">Checklist</string>
+    <string name="text_title">Text</string>
     <string name="checklist_option">Check list option</string>
 
     <string name="create_welcome_text">Create:</string>
