@@ -57,19 +57,19 @@ class ModularNoteView @JvmOverloads constructor(
         CreateModuleDialog.openDialog(context, ::addNewItem)
     }
 
-    private fun addNewItem(type : CreationType){
+    private fun addNewItem(type : CreationType, title : String){
         currentNote?.let { note ->
             when(type){
                 TextView -> {
                     val mutList = note.items.toMutableList()
-                    mutList.add(Text(""))
+                    mutList.add(Text(title, ""))
                     note.items = mutList.toList()
 
                     currentNote = note
                 }
                 CheckList -> {
                     val mutList = note.items.toMutableList()
-                    mutList.add(ModularItem.CheckList(listOf()))
+                    mutList.add(ModularItem.CheckList(title, listOf()))
                     note.items = mutList.toList()
 
                     currentNote = note

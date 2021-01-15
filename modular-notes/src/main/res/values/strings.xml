@@ -5,8 +5,8 @@
     <string name="text_title">Text</string>
     <string name="checklist_option">Check list option</string>
 
-    <string name="create_welcome_text">Create:</string>
+    <string name="create_module_input">Title</string>
     <string name="create_text_view">Text</string>
-    <string name="create_check_list">Check List</string>
+    <string name="create_checklist_view">Check List</string>
 
 </resources>

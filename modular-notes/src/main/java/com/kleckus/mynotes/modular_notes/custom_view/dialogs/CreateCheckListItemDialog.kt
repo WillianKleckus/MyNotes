@@ -10,39 +10,24 @@ import com.kleckus.mynotes.modular_notes.custom_view.dialogs.CreateModuleDialog.
 import com.kleckus.mynotes.modular_notes.custom_view.dialogs.CreateModuleDialog.CreationType.TextView
 import kotlinx.android.synthetic.main.create_module_dialog.view.*
 
-object CreateModuleDialog {
+object CreateCheckListItemDialog {
     fun openDialog(
-        context: Context,
-        create : (type : CreationType, title : String) -> Unit
+        context: Context
     ){
         val view = getView(context)
         val dialog = MaterialAlertDialogBuilder(context)
             .setView(view)
             .show()
-        view.setupView(create, dialog)
+        view.setupView(dialog)
     }
 
     private fun View.setupView(
-        create : (type : CreationType, title : String) -> Unit,
         dialog: AlertDialog
     ) {
-        checklistChip.setOnClickListener { if(textChip.isChecked) textChip.isChecked = false }
-        textChip.setOnClickListener { if(checklistChip.isChecked) checklistChip.isChecked = false }
-        addButton.setOnClickListener {
-            when{
-                textChip.isChecked -> create(TextView, titleField.text.toString())
-                checklistChip.isChecked -> create(CheckList, titleField.text.toString())
-            }
-            dialog.dismiss()
-        }
+
     }
 
     private fun getView(context : Context)
             = LayoutInflater.from(context).inflate(R.layout.create_module_dialog, null)
-
-    sealed class CreationType{
-        object TextView : CreationType()
-        object CheckList : CreationType()
-    }
 
 }

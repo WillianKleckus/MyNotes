@@ -25,12 +25,15 @@ class ModularNoteGroupItem(
                     checkListView.isGone = true
                     textView.isGone = false
 
+                    textTitle.text = item.title
                     textInput.setText(item.content)
                     textInput.onTextChange { item.content = it }
                 }
                 is CheckList -> {
                     checkListView.isGone = false
                     textView.isGone = true
+
+                    checkListTitle.text = item.title
 
                     val adapter = GroupAdapter<GroupieViewHolder>()
                     item.checkListItems.forEach { checkItem ->
