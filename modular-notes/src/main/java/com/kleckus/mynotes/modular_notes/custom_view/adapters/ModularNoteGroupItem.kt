@@ -6,6 +6,7 @@ import com.kleckus.mynotes.domain.models.ModularItem
 import com.kleckus.mynotes.domain.models.ModularItem.CheckList
 import com.kleckus.mynotes.domain.models.ModularItem.Text
 import com.kleckus.mynotes.modular_notes.R
+import com.kleckus.mynotes.modular_notes.custom_view.dialogs.CreateCheckListItemDialog
 import com.kleckus.mynotes.modular_notes.onTextChange
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
@@ -42,14 +43,18 @@ class ModularNoteGroupItem(
                     checkListRecyclerView.adapter = adapter
 
                     addButton.setOnClickListener {
-                        val checkItem = CheckListItem("Dummy item", false)
-                        val updatedList = item.checkListItems.toMutableList()
-                        updatedList.add(checkItem)
-                        item.checkListItems = updatedList
-                        notifyChanged()
+                        CreateCheckListItemDialog.openDialog(context) { item.addCheckListItem(it) }
                     }
                 }
             }
         }
+    }
+
+    private fun CheckList.addCheckListItem(field : String){
+        val checkItem = CheckListItem(field, false)
+        val updatedList = checkListItems.toMutableList()
+        updatedList.add(checkItem)
+        checkListItems = updatedList
+        notifyChanged()
     }
 }
