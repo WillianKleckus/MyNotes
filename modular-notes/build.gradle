@@ -48,5 +48,10 @@ dependencies {
     implementation "com.xwray:groupie:2.8.1"
     implementation "com.xwray:groupie-kotlin-android-extensions:2.8.1"
 
+    // Kodein DI
+    implementation 'org.kodein.di:kodein-di:7.1.0'
+    implementation 'org.kodein.di:kodein-di-framework-android-x:7.1.0'
+
     implementation project(":domain")
+    implementation project(":dialog-creator")
 }

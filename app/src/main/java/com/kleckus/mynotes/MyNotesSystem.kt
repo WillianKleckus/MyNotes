@@ -2,6 +2,7 @@ package com.kleckus.mynotes
 
 import android.app.Application
 import com.kleckus.mynotes.data.di.DataModule
+import com.kleckus.mynotes.dialog_creator.DialogModule
 import com.kleckus.mynotes.logger.di.LogModule
 import com.kleckus.mynotes.paper_database.di.PaperModule
 import com.kleckus.mynotes.ui.di.UIModule
@@ -19,5 +20,6 @@ class MyNotesSystem : Application(), DIAware{
         import(DataModule())
         import(UIModule())
         import(LogModule())
+        import(DialogModule())
     }
 }

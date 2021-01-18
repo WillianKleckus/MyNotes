@@ -4,30 +4,37 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.appcompat.widget.LinearLayoutCompat
+import com.kleckus.mynotes.dialog_creator.service.DialogService
 import com.kleckus.mynotes.domain.MyNotesErrors
-import com.kleckus.mynotes.domain.models.Item
 import com.kleckus.mynotes.domain.models.Item.*
 import com.kleckus.mynotes.domain.models.ModularItem
 import com.kleckus.mynotes.domain.models.ModularItem.Text
 import com.kleckus.mynotes.modular_notes.R
 import com.kleckus.mynotes.modular_notes.custom_view.adapters.ModularNoteGroupItem
-import com.kleckus.mynotes.modular_notes.custom_view.dialogs.CreateModuleDialog
-import com.kleckus.mynotes.modular_notes.custom_view.dialogs.CreateModuleDialog.CreationType
-import com.kleckus.mynotes.modular_notes.custom_view.dialogs.CreateModuleDialog.CreationType.CheckList
-import com.kleckus.mynotes.modular_notes.custom_view.dialogs.CreateModuleDialog.CreationType.TextView
+import com.kleckus.mynotes.modular_notes.custom_view.models.CreationType
+import com.kleckus.mynotes.modular_notes.custom_view.models.CreationType.*
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import kotlinx.android.synthetic.main.create_module_dialog.view.*
 import kotlinx.android.synthetic.main.layout_modular_note_view.view.*
+import org.kodein.di.DI
+import org.kodein.di.DIAware
+import org.kodein.di.android.closestDI
+import org.kodein.di.instance
 
 class ModularNoteView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : LinearLayoutCompat(context, attrs, defStyleAttr) {
+) : LinearLayoutCompat(context, attrs, defStyleAttr), DIAware {
+
+    override val di : DI by closestDI(context)
+
+    private val dialogService by instance<DialogService>()
 
     init {
         View.inflate(context, R.layout.layout_modular_note_view, this)
-        addModuleButton.setOnClickListener{ openCreationDialog() }
+        addModuleButton.setOnClickListener{ executeCreationDialog() }
     }
 
     private val adapter = GroupAdapter<GroupieViewHolder>()
@@ -41,7 +48,7 @@ class ModularNoteView @JvmOverloads constructor(
     private fun updateAdapter(){
         adapter.clear()
         currentNote?.items?.forEach { item ->
-            adapter.add(ModularNoteGroupItem(item))
+            adapter.add(ModularNoteGroupItem(dialogService, item))
         }
         modularRecycler.adapter = adapter
     }
@@ -53,14 +60,39 @@ class ModularNoteView @JvmOverloads constructor(
         }
     }
 
-    private fun openCreationDialog(){
-        CreateModuleDialog.openDialog(context, ::addNewItem)
+    private fun executeCreationDialog(){
+        dialogService.create(
+            context,
+            R.layout.create_module_dialog
+        ){ dialog ->
+            checklistChip.setOnClickListener {
+                if(textChip.isChecked) textChip.isChecked = false
+            }
+
+            textChip.setOnClickListener {
+                if(checklistChip.isChecked) checklistChip.isChecked = false
+            }
+
+            addButton.setOnClickListener {
+                when{
+                    textChip.isChecked -> addNewItem(
+                        type = Text,
+                        title = titleField.text.toString()
+                    )
+                    checklistChip.isChecked -> addNewItem(
+                        type = CheckList,
+                        title = titleField.text.toString()
+                    )
+                }
+                dialog.dismiss()
+            }
+        }
     }
 
     private fun addNewItem(type : CreationType, title : String){
         currentNote?.let { note ->
             when(type){
-                TextView -> {
+                Text -> {
                     val mutList = note.items.toMutableList()
                     mutList.add(Text(title, ""))
                     note.items = mutList.toList()

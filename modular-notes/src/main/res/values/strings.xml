@@ -9,4 +9,6 @@
     <string name="create_text_view">Text</string>
     <string name="create_checklist_view">Check List</string>
 
+    <string name="empty_title_error">Title cannot be empty</string>
+
 </resources>
