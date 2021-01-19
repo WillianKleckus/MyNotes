@@ -38,9 +38,20 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_add_circle"
-            android:tint="@color/add_button_color"
+            android:tint="@color/button_color"
             app:layout_constraintBottom_toBottomOf="@+id/checkListTitle"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/checkListTitle" />
+
+        <ImageView
+            android:id="@+id/deleteButton"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/ic_delete"
+            android:tint="@color/button_color"
+            app:layout_constraintBottom_toBottomOf="@+id/checkListTitle"
+            app:layout_constraintEnd_toStartOf="@+id/addButton"
             app:layout_constraintTop_toTopOf="@+id/checkListTitle" />
 
         <View
@@ -48,9 +59,10 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="?android:attr/listDivider"
+            android:layout_marginTop="@dimen/smallest_padding"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkListTitle" />
+            app:layout_constraintTop_toBottomOf="@+id/addButton" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/checkListRecyclerView"
@@ -83,25 +95,36 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/deleteTextButton"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_delete"
+            android:tint="@color/button_color"
+            app:layout_constraintBottom_toBottomOf="@+id/textTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textTitle" />
+
         <View
             android:id="@+id/textDivider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:layout_marginTop="@dimen/smallest_padding"
             android:background="?android:attr/listDivider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textTitle" />
 
         <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="@dimen/small_padding"
-            android:layout_marginBottom="@dimen/small_padding"
+            android:layout_marginTop="@dimen/smallest_padding"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/deleteTextButton">
 
             <EditText
                 android:id="@+id/textInput"

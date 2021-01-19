@@ -15,7 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/add_button_color" />
+        app:tint="@color/button_color" />
 
     <View
         android:id="@+id/divider"

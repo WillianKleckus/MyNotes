@@ -10,5 +10,6 @@
     <string name="create_checklist_view">Check List</string>
 
     <string name="empty_title_error">Title cannot be empty</string>
+    <string name="type_not_chosen">Choose one of the options</string>
 
 </resources>

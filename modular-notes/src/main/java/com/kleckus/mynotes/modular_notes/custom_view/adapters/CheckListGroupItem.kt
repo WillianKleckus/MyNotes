@@ -7,7 +7,8 @@ import com.xwray.groupie.Item
 import kotlinx.android.synthetic.main.layout_checklist_item.view.*
 
 class CheckListGroupItem(
-    private val item : CheckListItem
+    private val item : CheckListItem,
+    private val handleSelection : (item : CheckListItem) -> Unit
 ) : Item<GroupieViewHolder>() {
 
     override fun getLayout() = R.layout.layout_checklist_item
@@ -18,7 +19,10 @@ class CheckListGroupItem(
             option.text = item.name
 
             option.setOnClickListener { item.toggleCheck() }
-            option.setOnLongClickListener { TODO() }
+            option.setOnLongClickListener {
+                handleSelection(item)
+                true
+            }
         }
     }
 

@@ -6,7 +6,7 @@
     <color name="colorPrimaryDark">#FBD249</color>
     <color name="colorAccent">#AED143</color>
 
-    <color name="add_button_color">#3E3D37</color>
+    <color name="button_color">#3E3D37</color>
 
     <!-- Text view -->
     <color name="content_text_color">#101010</color>

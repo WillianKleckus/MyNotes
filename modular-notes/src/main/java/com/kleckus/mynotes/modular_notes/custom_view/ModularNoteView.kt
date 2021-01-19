@@ -3,6 +3,7 @@ package com.kleckus.mynotes.modular_notes.custom_view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.widget.LinearLayoutCompat
 import com.kleckus.mynotes.dialog_creator.service.DialogService
 import com.kleckus.mynotes.domain.MyNotesErrors
@@ -48,7 +49,7 @@ class ModularNoteView @JvmOverloads constructor(
     private fun updateAdapter(){
         adapter.clear()
         currentNote?.items?.forEach { item ->
-            adapter.add(ModularNoteGroupItem(dialogService, item))
+            adapter.add(ModularNoteGroupItem(dialogService, item, ::deleteItem))
         }
         modularRecycler.adapter = adapter
     }
@@ -75,16 +76,20 @@ class ModularNoteView @JvmOverloads constructor(
 
             addButton.setOnClickListener {
                 when{
-                    textChip.isChecked -> addNewItem(
-                        type = Text,
-                        title = titleField.text.toString()
-                    )
-                    checklistChip.isChecked -> addNewItem(
-                        type = CheckList,
-                        title = titleField.text.toString()
-                    )
+                    textChip.isChecked ->
+                        addNewItem(
+                            type = Text,
+                            title = titleField.text.toString()
+                        ).also { dialog.dismiss() }
+
+                    checklistChip.isChecked ->
+                        addNewItem(
+                            type = CheckList,
+                            title = titleField.text.toString()
+                        ).also { dialog.dismiss() }
+
+                    else -> Toast.makeText(context, context.getString(R.string.type_not_chosen), Toast.LENGTH_SHORT).show()
                 }
-                dialog.dismiss()
             }
         }
     }
@@ -109,5 +114,16 @@ class ModularNoteView @JvmOverloads constructor(
             }
             updateAdapter()
         }
+    }
+
+    private fun deleteItem(item : ModularItem){
+        currentNote?.let{ note ->
+            val editableList = note.items.toMutableList()
+            editableList.removeAll { it == item }
+            note.items = editableList.toList()
+
+            currentNote = note
+        }
+        updateAdapter()
     }
 }
