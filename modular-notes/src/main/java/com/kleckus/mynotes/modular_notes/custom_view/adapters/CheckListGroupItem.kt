@@ -24,12 +24,7 @@ class CheckListGroupItem(
             option.setOnLongClickListener {
                 yesOrNoDialog.create(
                     context = context,
-                    onYes = {
-                        onDelete(item)
-                    },
-                    onNo = {
-                        // do nothing
-                    }
+                    onConfirm = { hasConfirmed -> if(hasConfirmed) onDelete(item) }
                 )
                 true
             }

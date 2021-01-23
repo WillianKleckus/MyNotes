@@ -1,6 +1,7 @@
 package com.kleckus.mynotes.ui.adapters
 
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import com.kleckus.mynotes.dialog_creator.service.DialogService
 import com.kleckus.mynotes.ui.R
 import com.kleckus.mynotes.ui.dialogs.PasswordDialog
 import com.xwray.groupie.GroupieViewHolder
@@ -10,6 +11,7 @@ import kotlinx.android.synthetic.main.note_or_book_item_layout.view.*
 
 class MasterItem(
     private val item : Item,
+    private val dialogService: DialogService,
     private val onItemClicked : (item: Item) -> Unit,
     private val onItemLocked : (id: String, password : String) -> Unit
 ) : GroupieItem<GroupieViewHolder>() {
@@ -36,7 +38,13 @@ class MasterItem(
             }
 
             boolLockIcon.setOnClickListener {
-                PasswordDialog.openDialog(item.id, !item.isLocked, context, onItemLocked)
+                PasswordDialog(
+                    context = context,
+                    dialogService = dialogService,
+                    id = item.id,
+                    isLocking = !item.isLocked,
+                    lock = onItemLocked
+                )
             }
             setOnClickListener { onItemClicked(item) }
         }

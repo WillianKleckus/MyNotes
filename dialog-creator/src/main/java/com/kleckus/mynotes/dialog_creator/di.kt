@@ -1,7 +1,7 @@
 package com.kleckus.mynotes.dialog_creator
 
 import com.kleckus.mynotes.dialog_creator.internal.DialogCreator
-import com.kleckus.mynotes.dialog_creator.internal.YesOrNoDialogÏmplementation
+import com.kleckus.mynotes.dialog_creator.internal.YesOrNoDialogImplementation
 import com.kleckus.mynotes.dialog_creator.service.DialogService
 import com.kleckus.mynotes.dialog_creator.service.YesOrNoDialog
 import org.kodein.di.DI
@@ -16,7 +16,7 @@ object DialogModule{
         }
 
         bind<YesOrNoDialog>() with provider {
-            YesOrNoDialogÏmplementation(dialogService = instance())
+            YesOrNoDialogImplementation(dialogService = instance())
         }
     }
 }

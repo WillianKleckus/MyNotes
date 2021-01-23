@@ -6,6 +6,8 @@ import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import cafe.adriel.dalek.*
+import com.kleckus.mynotes.dialog_creator.service.DialogService
+import com.kleckus.mynotes.dialog_creator.service.YesOrNoDialog
 import com.kleckus.mynotes.domain.Constants.MASTER_BOOK_ID
 import com.kleckus.mynotes.domain.Constants.NO_PASSWORD
 import com.kleckus.mynotes.domain.MyNotesErrors
@@ -14,14 +16,13 @@ import com.kleckus.mynotes.domain.models.Item.*
 import com.kleckus.mynotes.domain.services.Logger
 import com.kleckus.mynotes.ui.R
 import com.kleckus.mynotes.ui.adapters.MasterItem
-import com.kleckus.mynotes.ui.dialogs.ConfirmationDialog
 import com.kleckus.mynotes.ui.dialogs.CreationType
 import com.kleckus.mynotes.ui.dialogs.CreationType.BOOK
 import com.kleckus.mynotes.ui.dialogs.CreationType.NOTE
-import com.kleckus.mynotes.ui.dialogs.NoteOrBookCreationDialog
 import com.kleckus.mynotes.ui.dialogs.PasswordDialog
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import kotlinx.android.synthetic.main.add_note_or_book_dialog.view.*
 import kotlinx.android.synthetic.main.master_activity.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,8 @@ class MasterActivity : AppCompatActivity(), DIAware {
     override val di: DI by closestDI()
     private val viewModel by instance<MasterBookViewModel>()
     private val logger by instance<Logger>()
+    private val dialogService by instance<DialogService>()
+    private val yesOrNoDialog by instance<YesOrNoDialog>()
 
     private val adapter = GroupAdapter<GroupieViewHolder>()
     private val mainScope = CoroutineScope(Dispatchers.Main)
@@ -73,7 +76,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
     }
 
     private fun delete(ownerId: String = MASTER_BOOK_ID, id : String, scope : CoroutineScope = mainScope){
-        ConfirmationDialog.openDialog(this){ confirmed ->
+        yesOrNoDialog.create(this){ confirmed ->
             logger.log("item-deleted")
             if(confirmed)
                 viewModel.deleteById(id).collectIn(scope){ event ->
@@ -114,7 +117,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
                 is Start -> setLoading(true)
                 is Success -> {
                     event.value.forEach { item ->
-                        adapter.add(MasterItem(item, ::onItemClicked, ::toggleLock))
+                        adapter.add(MasterItem(item, dialogService, ::onItemClicked, ::toggleLock))
                     }
                 }
                 is Failure -> handleError("Error on setBookAdapter()", event.exception)
@@ -125,7 +128,12 @@ class MasterActivity : AppCompatActivity(), DIAware {
 
     private fun onItemClicked(item : Item){
         if(item.isLocked){
-            PasswordDialog.openDialog(item.id, false, this){ _, password ->
+           PasswordDialog(
+               context = this,
+               dialogService = dialogService,
+               id = item.id,
+               isLocking = false
+           ) { _, password ->
                 if(password == item.password) goTo(item.id)
                 else showError(MyNotesErrors.InvalidPassword)
             }
@@ -177,7 +185,20 @@ class MasterActivity : AppCompatActivity(), DIAware {
     }
 
     private fun createNoteOrBook(ownerId : String){
-        NoteOrBookCreationDialog.openDialog(ownerId, ::doCreate, this)
+        dialogService.create(
+            context = this,
+            resId = R.layout.add_note_or_book_dialog
+        ){ dialog ->
+            noteOrBookRadioGroup.isGone = ownerId != MASTER_BOOK_ID
+
+            doneButton.setOnClickListener {
+                if(bookRadioButton.isChecked)
+                    doCreate(titleInput.text.toString(), ownerId, BOOK)
+                else
+                    doCreate(titleInput.text.toString(), ownerId, NOTE)
+                dialog.dismiss()
+            }
+        }
     }
 
     private fun doCreate(title : String, ownerId: String, type : CreationType){
