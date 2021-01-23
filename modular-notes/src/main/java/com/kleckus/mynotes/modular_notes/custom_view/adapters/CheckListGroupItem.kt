@@ -24,6 +24,7 @@ class CheckListGroupItem(
             option.setOnLongClickListener {
                 yesOrNoDialog.create(
                     context = context,
+                    title = R.string.check_list_item_deletion_confirmation,
                     onConfirm = { hasConfirmed -> if(hasConfirmed) onDelete(item) }
                 )
                 true

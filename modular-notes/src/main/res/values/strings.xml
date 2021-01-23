@@ -12,4 +12,6 @@
     <string name="empty_title_error">Title cannot be empty</string>
     <string name="type_not_chosen">Choose one of the options</string>
 
+    <string name="check_list_item_deletion_confirmation">Do you really want to delete this checklist item?</string>
+
 </resources>

@@ -48,7 +48,12 @@ class ModularNoteGroupItem(
             textTitle.text = item.title
             textInput.setText(item.content)
             textInput.onTextChange { item.content = it }
-            deleteTextButton.setOnClickListener { onDelete(item) }
+            deleteTextButton.setOnClickListener {
+                yesOrNoDialog.create(
+                    context = context,
+                    onConfirm = { hasConfirmed -> if(hasConfirmed) onDelete(item) }
+                )
+            }
         }
     }
 
@@ -68,6 +73,16 @@ class ModularNoteGroupItem(
                     context,
                     R.layout.create_checklist_item_dialog
                 ) { setupDialog(it) }
+            }
+
+            deleteCheckListButton.apply {
+                isGone = item.checkListItems.isNotEmpty()
+                setOnClickListener {
+                    yesOrNoDialog.create(
+                        context = context,
+                        onConfirm = { hasConfirmed -> if(hasConfirmed) onDelete(item) }
+                    )
+                }
             }
         }
     }
@@ -89,7 +104,7 @@ class ModularNoteGroupItem(
         updatedList.add(checkItem)
         checkListItems = updatedList
 
-        updateAdapter()
+        updateFullView()
     }
 
     private fun onDeleteChecklistItem(checkListItem : CheckListItem){
@@ -98,7 +113,7 @@ class ModularNoteGroupItem(
             updatedList.remove(checkListItem)
             item.checkListItems = updatedList.toList()
         }
-        updateAdapter()
+        updateFullView()
     }
 
     private fun updateAdapter(){
@@ -110,5 +125,12 @@ class ModularNoteGroupItem(
                 }
             }
         }
+    }
+
+    private fun updateMasterAdapter() { notifyChanged() }
+
+    private fun updateFullView(){
+        updateAdapter()
+        updateMasterAdapter()
     }
 }
