@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.widget.LinearLayoutCompat
 import com.kleckus.mynotes.dialog_creator.service.DialogService
+import com.kleckus.mynotes.dialog_creator.service.YesOrNoDialog
 import com.kleckus.mynotes.domain.MyNotesErrors
 import com.kleckus.mynotes.domain.models.Item.*
 import com.kleckus.mynotes.domain.models.ModularItem
@@ -32,6 +33,7 @@ class ModularNoteView @JvmOverloads constructor(
     override val di : DI by closestDI(context)
 
     private val dialogService by instance<DialogService>()
+    private val yesOrNoDialog by instance<YesOrNoDialog>()
 
     init {
         View.inflate(context, R.layout.layout_modular_note_view, this)
@@ -49,7 +51,7 @@ class ModularNoteView @JvmOverloads constructor(
     private fun updateAdapter(){
         adapter.clear()
         currentNote?.items?.forEach { item ->
-            adapter.add(ModularNoteGroupItem(dialogService, item, ::deleteItem))
+            adapter.add(ModularNoteGroupItem(dialogService, yesOrNoDialog ,item, ::deleteItem))
         }
         modularRecycler.adapter = adapter
     }

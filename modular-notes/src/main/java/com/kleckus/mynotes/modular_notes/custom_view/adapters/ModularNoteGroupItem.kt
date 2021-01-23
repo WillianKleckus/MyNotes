@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isGone
 import com.kleckus.mynotes.dialog_creator.service.DialogService
+import com.kleckus.mynotes.dialog_creator.service.YesOrNoDialog
 import com.kleckus.mynotes.domain.models.CheckListItem
 import com.kleckus.mynotes.domain.models.ModularItem
 import com.kleckus.mynotes.domain.models.ModularItem.CheckList
@@ -20,11 +21,11 @@ import kotlinx.android.synthetic.main.layout_modular_note_item.view.addButton
 
 class ModularNoteGroupItem(
     private val dialogService: DialogService,
+    private val yesOrNoDialog: YesOrNoDialog,
     private val item : ModularItem,
     private val onDelete : (item : ModularItem) -> Unit
 ) : Item<GroupieViewHolder>() {
 
-    private val selectedChecklistItems = mutableListOf<CheckListItem>()
     private val checklistAdapter by lazy { GroupAdapter<GroupieViewHolder>() }
 
     override fun getLayout() = R.layout.layout_modular_note_item
@@ -43,7 +44,6 @@ class ModularNoteGroupItem(
             checkListView.isGone = true
             textView.isGone = false
             addButton.setOnClickListener(null)
-            deleteButton.setOnClickListener(null)
 
             textTitle.text = item.title
             textInput.setText(item.content)
@@ -69,43 +69,7 @@ class ModularNoteGroupItem(
                     R.layout.create_checklist_item_dialog
                 ) { setupDialog(it) }
             }
-
-            deleteButton.apply {
-                isGone = false
-                when{
-                    selectedChecklistItems.isNotEmpty() -> setOnClickListener { deleteSelectedChecklistItems() }
-                    item.checkListItems.isEmpty() -> setOnClickListener { onDelete(item) }
-                    else -> {
-                        setOnClickListener(null)
-                        isGone = true
-                    }
-                }
-            }
         }
-    }
-
-    private fun deleteSelectedChecklistItems(){
-        (item as CheckList).let {
-            selectedChecklistItems.apply {
-                val editableList = item.checkListItems.toMutableList()
-                forEach {
-                    editableList.remove(it)
-                }
-                item.checkListItems = editableList.toList()
-                clear()
-            }
-        }
-
-        updateAdapter()
-    }
-
-    private fun handleChecklistSelection(selected : CheckListItem){
-        selectedChecklistItems.apply {
-            if(contains(selected)) remove(selected)
-            else add(selected)
-        }
-
-        updateAdapter()
     }
 
     private fun View.setupDialog(dialog : AlertDialog){
@@ -128,12 +92,21 @@ class ModularNoteGroupItem(
         updateAdapter()
     }
 
+    private fun onDeleteChecklistItem(checkListItem : CheckListItem){
+        (item as CheckList).let {
+            val updatedList = item.checkListItems.toMutableList()
+            updatedList.remove(checkListItem)
+            item.checkListItems = updatedList.toList()
+        }
+        updateAdapter()
+    }
+
     private fun updateAdapter(){
         (item as CheckList).let {
             checklistAdapter.apply {
                 clear()
                 item.checkListItems.forEach { checkItem ->
-                    add(CheckListGroupItem(checkItem, ::handleChecklistSelection))
+                    add(CheckListGroupItem(checkItem, yesOrNoDialog, ::onDeleteChecklistItem))
                 }
             }
         }

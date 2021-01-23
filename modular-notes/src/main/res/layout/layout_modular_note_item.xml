@@ -43,17 +43,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/checkListTitle" />
 
-        <ImageView
-            android:id="@+id/deleteButton"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginEnd="15dp"
-            android:src="@drawable/ic_delete"
-            android:tint="@color/button_color"
-            app:layout_constraintBottom_toBottomOf="@+id/checkListTitle"
-            app:layout_constraintEnd_toStartOf="@+id/addButton"
-            app:layout_constraintTop_toTopOf="@+id/checkListTitle" />
-
         <View
             android:id="@+id/listDivider"
             android:layout_width="match_parent"

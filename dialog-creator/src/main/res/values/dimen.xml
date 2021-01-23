@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Note and books dimensions -->
+    <dimen name="title_size">25sp</dimen>
+    <dimen name="content_size">20sp</dimen>
+
+    <!-- App dimensions -->
+    <dimen name="warning_size">25sp</dimen>
+    <dimen name="confirmation_dialog_text_size">25sp</dimen>
+
+    <!-- Padding -->
+    <dimen name="small_dips">12sp</dimen>
+    <dimen name="small_to_medium_dips">16sp</dimen>
+    <dimen name="medium_dips">20sp</dimen>
+    <dimen name="medium_to_large_dips">24sp</dimen>
+    <dimen name="large_dips">28sp</dimen>
+
+</resources>

@@ -1,5 +1,6 @@
 package com.kleckus.mynotes.modular_notes.custom_view.adapters
 
+import com.kleckus.mynotes.dialog_creator.service.YesOrNoDialog
 import com.kleckus.mynotes.domain.models.CheckListItem
 import com.kleckus.mynotes.modular_notes.R
 import com.xwray.groupie.GroupieViewHolder
@@ -8,7 +9,8 @@ import kotlinx.android.synthetic.main.layout_checklist_item.view.*
 
 class CheckListGroupItem(
     private val item : CheckListItem,
-    private val handleSelection : (item : CheckListItem) -> Unit
+    private val yesOrNoDialog: YesOrNoDialog,
+    private val onDelete : (item : CheckListItem) -> Unit
 ) : Item<GroupieViewHolder>() {
 
     override fun getLayout() = R.layout.layout_checklist_item
@@ -20,7 +22,15 @@ class CheckListGroupItem(
 
             option.setOnClickListener { item.toggleCheck() }
             option.setOnLongClickListener {
-                handleSelection(item)
+                yesOrNoDialog.create(
+                    context = context,
+                    onYes = {
+                        onDelete(item)
+                    },
+                    onNo = {
+                        // do nothing
+                    }
+                )
                 true
             }
         }
