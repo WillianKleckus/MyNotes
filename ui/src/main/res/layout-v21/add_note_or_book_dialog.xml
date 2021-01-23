@@ -7,47 +7,47 @@
     android:layout_height="wrap_content"
     android:padding="10dp">
 
-    <RadioGroup
-        android:id="@+id/noteOrBookRadioGroup"
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        style="@style/Widget.MaterialComponents.Chip.Choice"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <RadioButton
-            android:id="@+id/bookRadioButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/book_string" />
-
-        <RadioButton
-            android:id="@+id/noteRadioButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+        <com.google.android.material.chip.Chip
+            android:id="@+id/noteChip"
             android:text="@string/note_string"
-            android:checked="true"/>
-    </RadioGroup>
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-    <TextView
-        android:id="@+id/titleTV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="@string/title_string"
-        android:textColor="@color/content_text_color"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/noteOrBookRadioGroup" />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/bookChip"
+            android:text="@string/book_string"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-    <EditText
-        android:id="@+id/titleInput"
+    </com.google.android.material.chip.ChipGroup>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/titleView"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/title_text_color"
-        android:inputType="textMultiLine"
-        app:layout_constraintStart_toStartOf="@+id/titleTV"
-        app:layout_constraintTop_toBottomOf="@+id/titleTV" />
+        android:hint="@string/title_string"
+        android:layout_marginTop="@dimen/small_padding"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chipGroup">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/titleInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ImageButton
         android:id="@+id/doneButton"
@@ -56,8 +56,8 @@
         android:layout_marginTop="5dp"
         android:src="@drawable/done_icon"
         android:backgroundTint="@color/colorAccent"
-        app:layout_constraintEnd_toEndOf="@+id/titleInput"
-        app:layout_constraintTop_toBottomOf="@+id/titleInput" />
+        app:layout_constraintEnd_toEndOf="@+id/titleView"
+        app:layout_constraintTop_toBottomOf="@+id/titleView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

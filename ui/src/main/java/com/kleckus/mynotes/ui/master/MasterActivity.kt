@@ -23,6 +23,7 @@ import com.kleckus.mynotes.ui.dialogs.PasswordDialog
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.add_note_or_book_dialog.view.*
+import kotlinx.android.synthetic.main.add_note_or_book_dialog.view.chipGroup
 import kotlinx.android.synthetic.main.master_activity.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -189,10 +190,18 @@ class MasterActivity : AppCompatActivity(), DIAware {
             context = this,
             resId = R.layout.add_note_or_book_dialog
         ){ dialog ->
-            noteOrBookRadioGroup.isGone = ownerId != MASTER_BOOK_ID
+            chipGroup.isGone = ownerId != MASTER_BOOK_ID
+
+            bookChip.setOnClickListener {
+                if(noteChip.isChecked) noteChip.isChecked = false
+            }
+
+            noteChip.setOnClickListener {
+                if(bookChip.isChecked) bookChip.isChecked = false
+            }
 
             doneButton.setOnClickListener {
-                if(bookRadioButton.isChecked)
+                if(bookChip.isChecked)
                     doCreate(titleInput.text.toString(), ownerId, BOOK)
                 else
                     doCreate(titleInput.text.toString(), ownerId, NOTE)
