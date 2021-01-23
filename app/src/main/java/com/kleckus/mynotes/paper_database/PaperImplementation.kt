@@ -1,6 +1,7 @@
 package com.kleckus.mynotes.paper_database
 
 import com.kleckus.mynotes.domain.models.Item
+import com.kleckus.mynotes.domain.models.ModularItem
 import com.kleckus.mynotes.domain.services.PaperDatabase
 import io.paperdb.Paper
 

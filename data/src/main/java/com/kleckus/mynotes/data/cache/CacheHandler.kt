@@ -5,9 +5,9 @@ import com.kleckus.mynotes.data.cache.CacheHandler.Operation.REMOVE
 import com.kleckus.mynotes.domain.Constants.INITIAL_BOOK
 import com.kleckus.mynotes.domain.Constants.MASTER_BOOK_ID
 import com.kleckus.mynotes.domain.MyNotesErrors
-import com.kleckus.mynotes.domain.models.Book
 import com.kleckus.mynotes.domain.models.Item
-import com.kleckus.mynotes.domain.models.Note
+import com.kleckus.mynotes.domain.models.Item.Book
+import com.kleckus.mynotes.domain.models.Item.Note
 import com.kleckus.mynotes.domain.services.Logger
 import com.kleckus.mynotes.domain.services.PaperDatabase
 

@@ -2,9 +2,7 @@ package com.kleckus.mynotes.data
 
 import com.kleckus.mynotes.data.cache.CacheHandler
 import com.kleckus.mynotes.data.cloud.CloudHandler
-import com.kleckus.mynotes.domain.models.Book
 import com.kleckus.mynotes.domain.models.Item
-import com.kleckus.mynotes.domain.models.Note
 import com.kleckus.mynotes.domain.services.Storage
 
 class StorageImplementation(

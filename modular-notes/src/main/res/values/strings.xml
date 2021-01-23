@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="checklist_title">Checklist</string>
+    <string name="text_title">Text</string>
+    <string name="checklist_option">Check list option</string>
+
+    <string name="create_module_input">Title</string>
+    <string name="create_text_view">Text</string>
+    <string name="create_checklist_view">Check List</string>
+
+    <string name="empty_title_error">Title cannot be empty</string>
+    <string name="type_not_chosen">Choose one of the options</string>
+
+    <string name="check_list_item_deletion_confirmation">Do you really want to delete this checklist item?</string>
+
+</resources>

@@ -3,12 +3,8 @@ package com.kleckus.mynotes.ui.master
 import androidx.lifecycle.ViewModel
 import cafe.adriel.dalek.Dalek
 import cafe.adriel.dalek.DalekEvent
-import com.kleckus.mynotes.domain.Constants
-import com.kleckus.mynotes.domain.Constants.MASTER_BOOK_ID
-import com.kleckus.mynotes.domain.MyNotesErrors
-import com.kleckus.mynotes.domain.models.Book
 import com.kleckus.mynotes.domain.models.Item
-import com.kleckus.mynotes.domain.models.Note
+import com.kleckus.mynotes.domain.models.ModularItem
 import com.kleckus.mynotes.domain.services.Logger
 import com.kleckus.mynotes.domain.services.Storage
 import kotlinx.coroutines.flow.Flow

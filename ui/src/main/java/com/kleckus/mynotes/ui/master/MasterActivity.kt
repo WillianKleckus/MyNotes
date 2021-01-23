@@ -6,24 +6,24 @@ import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import cafe.adriel.dalek.*
+import com.kleckus.mynotes.dialog_creator.service.DialogService
+import com.kleckus.mynotes.dialog_creator.service.YesOrNoDialog
 import com.kleckus.mynotes.domain.Constants.MASTER_BOOK_ID
 import com.kleckus.mynotes.domain.Constants.NO_PASSWORD
 import com.kleckus.mynotes.domain.MyNotesErrors
-import com.kleckus.mynotes.domain.models.Book
 import com.kleckus.mynotes.domain.models.Item
-import com.kleckus.mynotes.domain.models.Note
+import com.kleckus.mynotes.domain.models.Item.*
 import com.kleckus.mynotes.domain.services.Logger
 import com.kleckus.mynotes.ui.R
-import com.kleckus.mynotes.ui.adapters.BookItem
-import com.kleckus.mynotes.ui.adapters.NoteItem
-import com.kleckus.mynotes.ui.dialogs.ConfirmationDialog
+import com.kleckus.mynotes.ui.adapters.MasterItem
 import com.kleckus.mynotes.ui.dialogs.CreationType
 import com.kleckus.mynotes.ui.dialogs.CreationType.BOOK
 import com.kleckus.mynotes.ui.dialogs.CreationType.NOTE
-import com.kleckus.mynotes.ui.dialogs.NoteOrBookCreationDialog
 import com.kleckus.mynotes.ui.dialogs.PasswordDialog
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import kotlinx.android.synthetic.main.add_note_or_book_dialog.view.*
+import kotlinx.android.synthetic.main.add_note_or_book_dialog.view.chipGroup
 import kotlinx.android.synthetic.main.master_activity.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +37,8 @@ class MasterActivity : AppCompatActivity(), DIAware {
     override val di: DI by closestDI()
     private val viewModel by instance<MasterBookViewModel>()
     private val logger by instance<Logger>()
+    private val dialogService by instance<DialogService>()
+    private val yesOrNoDialog by instance<YesOrNoDialog>()
 
     private val adapter = GroupAdapter<GroupieViewHolder>()
     private val mainScope = CoroutineScope(Dispatchers.Main)
@@ -48,15 +50,15 @@ class MasterActivity : AppCompatActivity(), DIAware {
         goTo(MASTER_BOOK_ID)
     }
 
-    private inline fun <reified T> load(
+    private fun load(
         id : String,
         scope : CoroutineScope = mainScope,
-        crossinline andThen: (item: T) -> Unit
+        andThen: (item: Item) -> Unit
     ){
         viewModel.getItemById(id).collectIn(scope){ event ->
             when(event){
                 is Start -> setLoading(true)
-                is Success -> andThen(event.value as T)
+                is Success -> andThen(event.value)
                 is Failure -> handleError("Error on load()", event.exception)
                 is Finish -> setLoading(false)
             }
@@ -75,7 +77,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
     }
 
     private fun delete(ownerId: String = MASTER_BOOK_ID, id : String, scope : CoroutineScope = mainScope){
-        ConfirmationDialog.openDialog(this){ confirmed ->
+        yesOrNoDialog.create(this){ confirmed ->
             logger.log("item-deleted")
             if(confirmed)
                 viewModel.deleteById(id).collectIn(scope){ event ->
@@ -101,7 +103,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
     }
 
     private fun goTo(id : String){
-        load<Item>(id){ item ->
+        load(id){ item ->
             when(item){
                 is Book -> setBookView(item)
                 is Note -> setNoteView(item)
@@ -115,14 +117,8 @@ class MasterActivity : AppCompatActivity(), DIAware {
             when(event){
                 is Start -> setLoading(true)
                 is Success -> {
-                    val result = event.value
-                    logger.log(result.toString())
-                    result.forEach { item ->
-                        when(item){
-                            is Book -> adapter.add(BookItem(item, ::onItemClicked, ::toggleLock))
-                            is Note -> adapter.add(NoteItem(item, ::onItemClicked, ::toggleLock))
-                            else -> throw MyNotesErrors.InvalidArgumentType
-                        }
+                    event.value.forEach { item ->
+                        adapter.add(MasterItem(item, dialogService, ::onItemClicked, ::toggleLock))
                     }
                 }
                 is Failure -> handleError("Error on setBookAdapter()", event.exception)
@@ -133,7 +129,12 @@ class MasterActivity : AppCompatActivity(), DIAware {
 
     private fun onItemClicked(item : Item){
         if(item.isLocked){
-            PasswordDialog.openDialog(item.id, false, this){ _, password ->
+           PasswordDialog(
+               context = this,
+               dialogService = dialogService,
+               id = item.id,
+               isLocking = false
+           ) { _, password ->
                 if(password == item.password) goTo(item.id)
                 else showError(MyNotesErrors.InvalidPassword)
             }
@@ -141,44 +142,37 @@ class MasterActivity : AppCompatActivity(), DIAware {
     }
 
     private fun setBookView(book : Book){
-        val isMasterBook = book.id == MASTER_BOOK_ID
-        optionsLayout.isGone = isMasterBook
+        setupToolbar(book)
 
         bookView.isVisible = true
-        noteView.isGone = true
-
-        if(!isMasterBook){
-            backButton.setOnClickListener { goTo(MASTER_BOOK_ID) }
-            deleteButton.setOnClickListener { delete(id = book.id) }
-        } else{
-            deleteButton.setOnClickListener(null)
-            backButton.setOnClickListener(null)
-        }
+        modularNoteView.isGone = true
 
         addButton.setOnClickListener { createNoteOrBook(book.id) }
-        titleTV.text = book.title
         setBookAdapter(book.noteIds)
     }
 
     private fun setNoteView(note: Note){
+        setupToolbar(note)
         optionsLayout.isVisible = true
 
         bookView.isGone = true
-        noteView.isVisible = true
+        modularNoteView.isVisible = true
 
-        backButton.setOnClickListener { goTo(note.ownerId) }
-        deleteButton.setOnClickListener { delete(id = note.id) }
+        setupToolbar(note)
+        modularNoteView.applyNote(note)
+        modularNoteView.onDoneClicked { note -> save(note.ownerId, note) }
+    }
 
-        titleTV.text = note.title
-        textInput.setText(note.content)
-        doneButton.setOnClickListener {
-            note.content = textInput.text.toString()
-            save(note.ownerId, note)
-        }
+    private fun setupToolbar(item : Item){
+        optionsLayout.isGone = item.id == MASTER_BOOK_ID
+
+        backButton.setOnClickListener { goTo(item.ownerId) }
+        deleteButton.setOnClickListener { delete(id = item.id) }
+        titleTV.text = item.title
     }
 
     private fun toggleLock(id : String, password : String){
-        load<Item>(id){ item ->
+        load(id){ item ->
             if(item.isLocked){
                 if(password == item.password){
                     item.toggleLock()
@@ -192,7 +186,28 @@ class MasterActivity : AppCompatActivity(), DIAware {
     }
 
     private fun createNoteOrBook(ownerId : String){
-        NoteOrBookCreationDialog.openDialog(ownerId, ::doCreate, this)
+        dialogService.create(
+            context = this,
+            resId = R.layout.add_note_or_book_dialog
+        ){ dialog ->
+            chipGroup.isGone = ownerId != MASTER_BOOK_ID
+
+            bookChip.setOnClickListener {
+                if(noteChip.isChecked) noteChip.isChecked = false
+            }
+
+            noteChip.setOnClickListener {
+                if(bookChip.isChecked) bookChip.isChecked = false
+            }
+
+            doneButton.setOnClickListener {
+                if(bookChip.isChecked)
+                    doCreate(titleInput.text.toString(), ownerId, BOOK)
+                else
+                    doCreate(titleInput.text.toString(), ownerId, NOTE)
+                dialog.dismiss()
+            }
+        }
     }
 
     private fun doCreate(title : String, ownerId: String, type : CreationType){
@@ -201,6 +216,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
                 BOOK -> {
                     val book = Book(
                         id = id,
+                        ownerId = MASTER_BOOK_ID,
                         isLocked = false,
                         password = NO_PASSWORD,
                         title = title,
@@ -216,7 +232,7 @@ class MasterActivity : AppCompatActivity(), DIAware {
                         isLocked = false,
                         password = NO_PASSWORD,
                         title = title,
-                        content = ""
+                        items = listOf()
                     )
                     save(note.ownerId, note)
                     logger.log("note-created")

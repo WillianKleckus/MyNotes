@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Confirmation dialog strings -->
+    <string name="yes_string">Yes</string>
+    <string name="no_string">No</string>
+    <string name="are_you_sure_string">Are you sure?</string>
+
+</resources>

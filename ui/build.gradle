@@ -61,4 +61,6 @@ dependencies {
 
     // Project
     implementation project(":domain")
+    implementation project(":modular-notes")
+    implementation project(":dialog-creator")
 }
